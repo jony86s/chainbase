@@ -1,4 +1,4 @@
-#include <chainbase/chainbase.hpp>
+#include <chainbase/chainbase.hpp> // chainrocks::database
 #include <boost/array.hpp>
 
 #include <iostream>
