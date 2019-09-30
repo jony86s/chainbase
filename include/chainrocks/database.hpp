@@ -1,3 +1,10 @@
+/**
+ *  @file database.hpp
+ *  @copyright defined in eosio/LICENSE.txt
+ */
+
+#pragma once
+
 #include <deque>  // std::deque
 #include <vector> // std::vector
 
@@ -8,22 +15,29 @@
 
 namespace chainrocks {
    /**
+    * Implementation of the top layer key/value store database.
     *
+    * The underlying database is RocksDB (with there being the
+    * possibilty of it being generic in the future). The unique
+    * properties that RocksDB and key/value stores have opens up the
+    * doors for a numereous amount of different possibilities and
+    * strategies for managing the state of a blockchain.
     */
    class database {
    public:
       /**
-       *
+       * Constructor; normal operation.
        */
       database(const boost::filesystem::path& database_dir);
 
       /**
-       *
+       * Destructor; normal operation.
        */
-      ~database();
+      ~database() = default;
 
       /**
-       *
+       * Deleted copy, assignment, and move constructors. We do not
+       * want the ability to copy the database around (at the moment).
        */
       database(const database&) = delete;
       database& operator= (const database&) = delete;
@@ -31,14 +45,14 @@ namespace chainrocks {
       database& operator= (database&&) = delete;
 
       /**
-       *
+       * Returns the current state of the database.
        */
-      const auto& state() const;
+      const rocksdb_backend& state() const;
 
       /**
-       *
+       * Returns the deque of undo state objects.
        */
-      const auto& stack() const;
+      const std::deque<undo_state>& stack() const;
 
       /**
        * Add a new value to `_state` or modify an existing value.
@@ -56,22 +70,24 @@ namespace chainrocks {
       void get(const std::vector<uint8_t> key, std::string &value);
 
       /**
-       * Check if a specific key exists in the database.
+       * Check if a specific key exists in `_state`.
        */
       bool does_key_exist(const std::vector<uint8_t> key, std::string tmp = {});
 
       /**
-       * Writes to batchman.
+       * Perform a batch write; defferring to realize the operation
+       * until `write_batch` has been called.
        */
       void put_batch(const std::vector<uint8_t> key, const std::vector<uint8_t>& value);
 
       /**
-       * Remove from batchman.
+       * Perform a batch remove; defferring to realize the operation
+       * until `write_batch` has been called.
        */
       void remove_batch(const std::vector<uint8_t> key);
 
       /**
-       * Write to the actual database.
+       * Perform all batch operations; realizing all batch operations.
        */
       void write_batch();
 
@@ -85,8 +101,8 @@ namespace chainrocks {
       /**
        * After each `undo_state` is acted on appropriately by a call
        * to `undo`, it shall get popped off of the `_undo_stack`.
-       * Therefore, a call to `undo_all` will continually undo and
-       * pop states off of the stack until `_undo_stack` is
+       * Therefore, a call to `undo_all` will continually undo and pop
+       * all states off of the stack until the `_undo_stack` is
        * empty. The analagous function to this is `commit`; which
        * clears the `_undo_stack`, and does not act upon any of the
        * pushed `undo_state` objects.
@@ -241,11 +257,15 @@ namespace chainrocks {
 
       /**
        * Sqaushing is the act of taking the first two recent
-       * `undo_state`s and combining them into one.
+       * `undo_state`s and combining them into one by certain
+       * predetermined calculations.
        */
       void squash();
 
       /**
+       * Implementation of the logic of starting/stopping/operating on
+       * state that could potentially be undoed.
+       *
        * A `session` is allowed to hold only one `index`. And is
        * allowed to specify if its given `index` is eligible to acted
        * upon be `undo` or `squash` via the boolean value `_apply`.
@@ -255,52 +275,51 @@ namespace chainrocks {
       class session {
       public:
          /**
-          *
-          */
-         session(const session&) = delete;
-         session& operator= (const session&) = delete;
-
-         /**
-          *
-          */
-         session(session&& s);
-
-         /**
-          *
-          */
-         session& operator= (session&& s);
-
-         /**
           * RAII functionality; upon the destruction of `session` it
           * shall be determined whether or not the `_index` is acted
           * upon by `undo`.
           */
          ~session();
+         
+         /**
+          * Copy constructor and copy assignment operator deleted
+          * because we only want to be able to move a `session` object
+          * from one place to another.
+          */
+         session(const session&) = delete;
+         session& operator= (const session&) = delete;
 
          /**
-          *
+          * Move constructor; normal operation.
+          */
+         session(session&& s);
+
+         /**
+          * Move assignment operator; normal operation.
+          */
+         session& operator= (session&& s);
+
+         /**
+          * Declare that the last revision shall not be undoed.
           */
          void push();
 
          /**
-          *
+          * Undo the last revision.
           */
          void undo();
 
          /**
-          *
+          * Squash the last two revisions.
           */
          void squash();
 
          /**
-          *
+          * Return the revision number of this session.
           */
          int64_t revision() const;
 
       private:
-         /**
-          *
-          */
          friend class database;
 
          /**
@@ -313,10 +332,9 @@ namespace chainrocks {
          /**
           * The given `index` for this session to hold.
           */
-         database& _state;
+         database& _db;
 
          /**
-          * The predicate determining whether or not this `session`
           * The predicate determining whether or not this `session`
           * is elligle to be acted upon by either `undo` or `squash`.
           */
@@ -328,7 +346,7 @@ namespace chainrocks {
           * number of the held `index` will be exactly identical to
           * eachother.
           */
-         int64_t _revision{};
+         int64_t _revision;
       };
 
       /**

@@ -1,6 +1,11 @@
+/**
+ *  @file rocksdb_backend.cpp
+ *  @copyright defined in eosio/LICENSE.txt
+ */
+
 #include <string>
 
-#include "rocksdb_backend.hpp"
+#include <chainrocks/rocksdb_backend.hpp>
 
 namespace chainrocks {
    rocksdb_backend::rocksdb_backend(const boost::filesystem::path& database_dir)
@@ -30,7 +35,7 @@ namespace chainrocks {
       _status = _databaseman->Get(_options.read_options(), static_cast<std::string>(key), &value);
    }
 
-   bool rocksdb_backend::does_key_exist(const rocksdb_datum& key, std::string tmp = {}) {
+   bool rocksdb_backend::does_key_exist(const rocksdb_datum& key, std::string tmp) {
       bool ret{_databaseman->KeyMayExist(_options.read_options(), static_cast<std::string>(key), &tmp)};
       return ret;
    }

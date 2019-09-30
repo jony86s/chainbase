@@ -69,7 +69,7 @@ add_library( chainbase src/chainbase.cpp src/pinnable_mapped_file.cpp ${HEADERS}
 target_link_libraries( chainbase Boost::filesystem ${PLATFORM_LIBRARIES} )
 target_include_directories( chainbase PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
-add_library( chainrocks src/chainrocks.cpp ${HEADERS} )
+add_library( chainrocks src/database.cpp src/rocksdb_backend.cpp src/rocksdb_datum.cpp src/rocksdb_options.cpp src/undo_state.cpp ${HEADERS} )
 target_link_libraries( chainrocks Boost::filesystem ${ROCKSDB_LIBRARY} ${PLATFORM_LIBRARIES} )
 target_include_directories( chainrocks PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 

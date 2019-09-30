@@ -1,4 +1,9 @@
-#include "rocksdb_datum.hpp"
+/**
+ *  @file rocksdb_datum.cpp
+ *  @copyright defined in eosio/LICENSE.txt
+ */
+
+#include <chainrocks/rocksdb_datum.hpp>
 
 namespace chainrocks {
    rocksdb_datum::rocksdb_datum(const std::vector<uint8_t>& dat)

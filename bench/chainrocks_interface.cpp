@@ -8,7 +8,7 @@
 #include "chainrocks_interface.hpp"
    
 chainrocks_interface::chainrocks_interface(const boost::filesystem::path& database_dir)
-: _db{database_dir}
+   : _db{database_dir}
 {
 }
 
@@ -25,8 +25,8 @@ void chainrocks_interface::swap(const generated_data& gen_data, size_t i) {
    const arbitrary_datum rand_account0{gen_data.accounts()[gen_data.swaps0()[i]]};
    const arbitrary_datum rand_account1{gen_data.accounts()[gen_data.swaps1()[i]]};
 
-   _db._state.get(rand_account0, string_value0);
-   _db._state.get(rand_account1, string_value1);
+   _db.get(rand_account0, string_value0);
+   _db.get(rand_account1, string_value1);
 
    chainrocks::rocksdb_datum datum_value0{string_value0};
    chainrocks::rocksdb_datum datum_value1{string_value1};

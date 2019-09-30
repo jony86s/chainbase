@@ -7,7 +7,7 @@
 
 #include <boost/filesystem.hpp> // boost::filesystem::path
 
-#include <chainrocks/chainrocks.hpp> // chainrocks::database
+#include <chainrocks/database.hpp> // chainrocks::database
 
 #include "abstract_database.hpp" // abstract_database
 #include "common.hpp"            // arbitrary_datum

@@ -1,4 +1,9 @@
-#include "rocksdb_options.hpp"
+/**
+ *  @file rocksdb_options.cpp
+ *  @copyright defined in eosio/LICENSE.txt
+ */
+
+#include <chainrocks/rocksdb_options.hpp>
 
 namespace chainrocks {
    rocksdb_options::rocksdb_options() {
@@ -8,23 +13,19 @@ namespace chainrocks {
       _init_write_options();
    }
 
-   rocksdb_options::~rocksdb_options()
-   {
-   }
-
-   const rocksdb::Options& rocksdb_options::general_options() {
+   const rocksdb::Options& rocksdb_options::general_options() const {
       return _general_options;
    }
 
-   const rocksdb::FlushOptions& rocksdb_options::flush_options() {
+   const rocksdb::FlushOptions& rocksdb_options::flush_options() const {
       return _flush_options;
    }
 
-   const rocksdb::ReadOptions& rocksdb_options::read_options() {
+   const rocksdb::ReadOptions& rocksdb_options::read_options() const {
       return _read_options;
    }
 
-   const rocksdb::WriteOptions& rocksdb_options::write_options() {
+   const rocksdb::WriteOptions& rocksdb_options::write_options() const {
       return _write_options;
    }
       

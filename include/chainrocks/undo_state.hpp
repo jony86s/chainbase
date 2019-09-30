@@ -1,9 +1,18 @@
+/**
+ *  @file undo_state.hpp
+ *  @copyright defined in eosio/LICENSE.txt
+ */
+
+#pragma once
+
 #include <set>    // std::set
 #include <map>    // std::map
 #include <vector> // std::vector
 
 namespace chainrocks {
    /**
+    * Implementation of an object with undo state.
+    *
     * Holds the current undo state of a particular session.  For
     * example: whenever `start_undo_session` gets called, a new
     * `session` object is returned, and with that an `undo_state`
@@ -18,9 +27,29 @@ namespace chainrocks {
    class undo_state {
    public:
       /**
-       * 
+       * Constructor; normal operation.
        */
       undo_state();
+
+      /**
+       * Returns the modified values in this undo state.
+       */
+      std::map<std::vector<uint8_t>, std::vector<uint8_t>>& modified_values();
+
+      /**
+       * Returns the removed values in this undo state.
+       */
+      std::map<std::vector<uint8_t>, std::vector<uint8_t>>& removed_values();
+
+      /**
+       * Returns the new keys added in this undo state.
+       */
+      std::set<std::vector<uint8_t>>& new_keys();
+
+      /**
+       * Returns the revision number of this undo state.
+       */
+      int64_t& revision();
 
    private:
       /**
@@ -40,9 +69,7 @@ namespace chainrocks {
 
       /**
        * The unique revision number held by each `undo_state` object.
-       * Note that this revision number will never be less than or
-       * equal to, to that of the `index` it is associated with.
        */
-      int64_t _revision{};
+      int64_t _revision;
    };
 }
