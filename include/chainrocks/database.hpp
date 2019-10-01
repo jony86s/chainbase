@@ -272,6 +272,11 @@ namespace chainrocks {
       void print_state();
 
       /**
+       * Return all the database as a `std::map`.
+       */
+      std::map<uint8_t,uint8_t> get_as_map();
+
+      /**
        * Implementation of the logic of starting/stopping/operating on
        * state that could potentially be undoed.
        *

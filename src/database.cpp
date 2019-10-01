@@ -114,6 +114,18 @@ namespace chainrocks {
       delete iter;
    }
 
+   std::map<uint8_t,uint8_t> database::get_as_map() {
+      std::map<uint8_t,uint8_t> ret;
+      rocksdb::Iterator* iter{_state.db()->NewIterator(_state.options().read_options())};
+      for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
+         ret[*reinterpret_cast<uint8_t*>(iter->key().ToString())] = *reinterpret_cast<uint8_t*>(iter->value().ToString());
+         // std::cout << iter->key().ToString() << ':' << iter->value().ToString() << '\n';
+      }
+      assert(iter->status().ok()); // Check for any errors found during the scan
+      delete iter;
+      return ret;
+   }
+
    database::session database::start_undo_session(bool enabled) {
       if (enabled) {
          _stack.emplace_back();

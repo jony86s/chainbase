@@ -5,6 +5,14 @@
 #include <chainrocks/database.hpp>
 
 /**
+ * Test data.
+ */
+static const std::vector<uint8_t> keys0[10]  { {0x41}, {0x42}, {0x43}, {0x44}, {0x45}, {0x46}, {0x47}, {0x48}, {0x49}, {0x4A}};
+static const std::vector<uint8_t> keys1[10]  { {0x51}, {0x52}, {0x53}, {0x54}, {0x55}, {0x56}, {0x57}, {0x58}, {0x59}, {0x5A}};
+static const std::vector<uint8_t> values0[10]{ {0x61}, {0x62}, {0x63}, {0x64}, {0x65}, {0x66}, {0x67}, {0x68}, {0x69}, {0x6A}};
+static const std::vector<uint8_t> values1[10]{ {0x71}, {0x72}, {0x73}, {0x74}, {0x75}, {0x76}, {0x77}, {0x78}, {0x79}, {0x7A}};
+
+/**
  * Fixture to set up and tear down per test.
  */
 struct database_fixture {
@@ -16,13 +24,14 @@ struct database_fixture {
    chainrocks::database _db;
 };
 
-/**
- * Test data.
- */
-static const std::vector<uint8_t> keys0[10]  { {0x41}, {0x42}, {0x43}, {0x44}, {0x45}, {0x46}, {0x47}, {0x48}, {0x49}, {0x4A}};
-static const std::vector<uint8_t> keys1[10]  { {0x51}, {0x52}, {0x53}, {0x54}, {0x55}, {0x56}, {0x57}, {0x58}, {0x59}, {0x5A}};
-static const std::vector<uint8_t> values0[10]{ {0x61}, {0x62}, {0x63}, {0x64}, {0x65}, {0x66}, {0x67}, {0x68}, {0x69}, {0x6A}};
-static const std::vector<uint8_t> values1[10]{ {0x71}, {0x72}, {0x73}, {0x74}, {0x75}, {0x76}, {0x77}, {0x78}, {0x79}, {0x7A}};
+template <typename Map>
+bool vector_compare (Map const &lhs, Map const &rhs) {
+   return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+void compare(const std::map<uint8_t,uint8_t>& correct_vec, const std::map<uint8_t,uint8_t>& database_data_vec, ) {
+   BOOST_TEST_REQUIRE( vector_compare(correct_vec, database_data_vec) );
+}
 
 /**
  * Testing `database` functionality:
@@ -42,7 +51,7 @@ static const std::vector<uint8_t> values1[10]{ {0x71}, {0x72}, {0x73}, {0x74}, {
 BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
    // _db:
    _db.print_state();
-   // BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+   compare(std::map<uint8_t,uint8_t>{}, _db.get_as_map());
 
    _db.start_undo_session(true);
    for (size_t i{0}; i < 10; ++i) {
