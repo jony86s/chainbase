@@ -3,11 +3,15 @@
  *  @copyright defined in eosio/LICENSE.txt
  */
 
-#include <utility> // std::move
+#include <iostream>    // std::cout
+#include <type_traits> // std::is_pointer
+#include <utility>     // std::move
 
 #include <boost/throw_exception.hpp> // BOOST_THROW_EXCEPTION
 
 #include <chainrocks/database.hpp> // chainrocks::database
+
+#include <rocksdb/iterator.h> // rocksdb::WriteBatch
 
 namespace chainrocks {
    database::database(const boost::filesystem::path& database_dir)
@@ -98,6 +102,16 @@ namespace chainrocks {
 
       _stack.pop_back();
       --_revision;
+   }
+
+   void database::print_state() {
+      std::cout << "_state:\n";
+      rocksdb::Iterator* iter{_state.db()->NewIterator(_state.options().read_options())};
+      for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
+         std::cout << iter->key().ToString() << ':' << iter->value().ToString() << '\n';
+      }
+      assert(iter->status().ok()); // Check for any errors found during the scan
+      delete iter;
    }
 
    database::session database::start_undo_session(bool enabled) {

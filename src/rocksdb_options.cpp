@@ -30,6 +30,7 @@ namespace chainrocks {
    }
       
    void rocksdb_options::_init_general_options() {
+      // _general_options.compression = rocksdb::kNoCompression;
       _general_options.create_if_missing = true;
       _general_options.paranoid_checks = false;
       _general_options.IncreaseParallelism();

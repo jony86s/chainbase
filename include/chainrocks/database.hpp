@@ -10,8 +10,8 @@
 
 #include <boost/filesystem.hpp> // boost::filesystem::path
 
-#include <rocksdb_backend.hpp> // chainrocks::rocksdb_backend
-#include <undo_state.hpp>      // chainrocks::undo_state
+#include "rocksdb_backend.hpp" // chainrocks::rocksdb_backend
+#include "undo_state.hpp"      // chainrocks::undo_state
 
 namespace chainrocks {
    /**
@@ -265,6 +265,11 @@ namespace chainrocks {
        * predetermined calculations.
        */
       void squash();
+
+      /**
+       * Print all key/value pairs in this database.
+       */
+      void print_state();
 
       /**
        * Implementation of the logic of starting/stopping/operating on
