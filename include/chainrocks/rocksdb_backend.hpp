@@ -10,8 +10,8 @@
 #include <rocksdb/db.h>          // rocksdb::DB
 #include <rocksdb/write_batch.h> // rocksdb::WriteBatch
 
-#include "rocksdb_datum.hpp"   // chainrocks::rocksdb_datum
-#include "rocksdb_options.hpp" // chainrocks::rocksdb_options
+#include <rocksdb_datum.hpp>   // chainrocks::rocksdb_datum
+#include <rocksdb_options.hpp> // chainrocks::rocksdb_options
 
 namespace chainrocks {
    /**

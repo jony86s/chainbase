@@ -10,16 +10,18 @@
 
 #include <boost/filesystem.hpp> // boost::filesystem::path
 
-#include "rocksdb_backend.hpp" // chainrocks::rocksdb_backend
-#include "undo_state.hpp"      // chainrocks::undo_state
+#include <rocksdb_backend.hpp> // chainrocks::rocksdb_backend
+#include <undo_state.hpp>      // chainrocks::undo_state
 
 namespace chainrocks {
    /**
-    * Implementation of the top layer key/value store database.
+    * Implementation of the top layer database; which, in the future,
+    * could be made generic to support a multitude of different
+    * databases.
     *
     * The underlying database is RocksDB (with there being the
     * possibilty of it being generic in the future). The unique
-    * properties that RocksDB and key/value stores have opens up the
+    * properties that a key/value store database has opens up the
     * doors for a numereous amount of different possibilities and
     * strategies for managing the state of a blockchain.
     */
@@ -55,22 +57,23 @@ namespace chainrocks {
       const std::deque<undo_state>& stack() const;
 
       /**
-       * Add a new value to `_state` or modify an existing value.
+       * Add a new key/value pair to `_state`, or modify an existing
+       * key/value pair.
        */
       void put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value);
 
       /**
-       * Remove a value from `_state`.
+       * Remove a key/value pair from `_state`.
        */
       void remove(const std::vector<uint8_t>& key);
 
       /**
-       * Get a value from `_state`.
+       * Get a value from a key/value pair from `_state`.
        */
       void get(const std::vector<uint8_t> key, std::string &value);
 
       /**
-       * Check if a specific key exists in `_state`.
+       * Check if a specific key/value pair exists in `_state`.
        */
       bool does_key_exist(const std::vector<uint8_t> key, std::string tmp = {});
 
@@ -100,12 +103,13 @@ namespace chainrocks {
 
       /**
        * After each `undo_state` is acted on appropriately by a call
-       * to `undo`, it shall get popped off of the `_undo_stack`.
+       * to `undo`, any database state associated with the current
+       * undo session shall be popped off of the `_undo_stack`.
        * Therefore, a call to `undo_all` will continually undo and pop
-       * all states off of the stack until the `_undo_stack` is
-       * empty. The analagous function to this is `commit`; which
-       * clears the `_undo_stack`, and does not act upon any of the
-       * pushed `undo_state` objects.
+       * off all states until the `_undo_stack` is empty. The
+       * analagous function to this is `commit`; which clears the
+       * `_undo_stack`, and does not act upon any of the pushed
+       * `undo_state` objects.
        */
       void undo_all();
 
@@ -113,7 +117,7 @@ namespace chainrocks {
        * Commit all `undo_state`s to the `_state` by effectively not
        * acting upon any of the `undo_state` objects on the `_stack`.
        */
-      void commit();
+      void commit(); 
 
       /**
        * All possible combinations of squashing two `undo_state` objects together:
@@ -266,17 +270,15 @@ namespace chainrocks {
        * Implementation of the logic of starting/stopping/operating on
        * state that could potentially be undoed.
        *
-       * A `session` is allowed to hold only one `index`. And is
-       * allowed to specify if its given `index` is eligible to acted
-       * upon be `undo` or `squash` via the boolean value `_apply`.
-       * Note that the session be explicitly told not to do so, by
-       * calling the method `push`.
+       * A `session` is eligible to acted upon be `undo` or `squash`
+       * via the boolean value `_apply`.  Note that the session be
+       * explicitly told not to do so, by calling the method `push`.
        */
       class session {
       public:
          /**
           * RAII functionality; upon the destruction of `session` it
-          * shall be determined whether or not the `_index` is acted
+          * shall be determined whether or not any state is acted
           * upon by `undo`.
           */
          ~session();
@@ -330,7 +332,7 @@ namespace chainrocks {
          session(database& db, int64_t revision);
 
          /**
-          * The given `index` for this session to hold.
+          * The given state for this session to hold.
           */
          database& _db;
 
@@ -342,9 +344,6 @@ namespace chainrocks {
 
          /**
           * The unique revision number held by each `session` object.
-          * Note that this `_revision` number and the `_revision`
-          * number of the held `index` will be exactly identical to
-          * eachother.
           */
          int64_t _revision;
       };
@@ -355,8 +354,8 @@ namespace chainrocks {
        * ideas: the start of a block (containing transactions) in a
        * blockchain, or the start of a transaction (containing
        * actions) within a block. Each of which have the ability to
-       * `commit` if valid or to `undo` if invalid due to the nature
-       * of these data structures.
+       * `commit` or to `undo` the given state they're responsible
+       * for.
        */
       session start_undo_session(bool enabled);
 
@@ -423,7 +422,7 @@ namespace chainrocks {
 
    private:
       /**
-       * The current state of the `index` object.
+       * The current state of the database.
        */
       rocksdb_backend _state;
 
@@ -434,7 +433,8 @@ namespace chainrocks {
       std::deque<undo_state> _stack;
 
       /**
-       * The unique revision number held by each `index` object.
+       * The unique revision number. TODO: What is this used for in
+       * the context of a key/value store?
        */
       int64_t _revision;
    };
