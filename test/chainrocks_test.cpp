@@ -2,15 +2,16 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <chainrocks/common.hpp>
 #include <chainrocks/database.hpp>
 
 /**
  * Test data.
  */
-static const std::vector<uint8_t> keys0[10]  { {0x41}, {0x42}, {0x43}, {0x44}, {0x45}, {0x46}, {0x47}, {0x48}, {0x49}, {0x4A}};
-static const std::vector<uint8_t> keys1[10]  { {0x51}, {0x52}, {0x53}, {0x54}, {0x55}, {0x56}, {0x57}, {0x58}, {0x59}, {0x5A}};
-static const std::vector<uint8_t> values0[10]{ {0x61}, {0x62}, {0x63}, {0x64}, {0x65}, {0x66}, {0x67}, {0x68}, {0x69}, {0x6A}};
-static const std::vector<uint8_t> values1[10]{ {0x71}, {0x72}, {0x73}, {0x74}, {0x75}, {0x76}, {0x77}, {0x78}, {0x79}, {0x7A}};
+static const std::vector<uint8_t> keys0[10]  { {0x40}, {0x41}, {0x42}, {0x43}, {0x44}, {0x45}, {0x46}, {0x47}, {0x48}, {0x49}};
+static const std::vector<uint8_t> keys1[10]  { {0x50}, {0x51}, {0x52}, {0x53}, {0x54}, {0x55}, {0x56}, {0x57}, {0x58}, {0x59}};
+static const std::vector<uint8_t> values0[10]{ {0x60}, {0x61}, {0x62}, {0x63}, {0x64}, {0x65}, {0x66}, {0x67}, {0x68}, {0x69}};
+static const std::vector<uint8_t> values1[10]{ {0x70}, {0x71}, {0x72}, {0x73}, {0x74}, {0x75}, {0x76}, {0x77}, {0x78}, {0x79}};
 
 /**
  * Fixture to set up and tear down per test.
@@ -26,10 +27,23 @@ struct database_fixture {
 
 template <typename Map>
 bool vector_compare (Map const &lhs, Map const &rhs) {
+   std::cout << lhs.size() << '\n';
+   std::cout << rhs.size() << '\n';
+
+   std::cout << "Printing the first map:" << '\n';
+   for (const auto& elem : lhs) {
+      std::cout << std::hex << elem.first << ' ' << elem.second << '\n';
+   }
+
+   std::cout << "Printing the second map:" << '\n';
+   for (const auto& elem : rhs) {
+      std::cout << elem.first << ' ' << elem.second << '\n';
+   }
+
    return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
-void compare(const std::map<uint8_t,uint8_t>& correct_vec, const std::map<uint8_t,uint8_t>& database_data_vec, ) {
+void compare(const std::map<uint8_t,uint8_t>& correct_vec, const std::map<uint8_t,uint8_t>& database_data_vec) {
    BOOST_TEST_REQUIRE( vector_compare(correct_vec, database_data_vec) );
 }
 
@@ -45,13 +59,14 @@ void compare(const std::map<uint8_t,uint8_t>& correct_vec, const std::map<uint8_
  * `undo`
  *
  * _db:
- * _db: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
+ * _db: 0x40:0x60 0x41:0x61 0x42:0x62 0x43:0x63 0x44:0x64 0x45:0x65 0x46:0x66 0x47:0x67 0x48:0x68 0x49:0x69
  * _db:
  */
 BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
    // _db:
    _db.print_state();
    compare(std::map<uint8_t,uint8_t>{}, _db.get_as_map());
+   // BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
 
    _db.start_undo_session(true);
    for (size_t i{0}; i < 10; ++i) {
@@ -59,15 +74,18 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
    }
    _db.write_batch();
 
-   // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
+   // _db: 0x40:0x60 0x41:0x61 0x42:0x62 0x43:0x63 0x44:0x64 0x45:0x65 0x46:0x66 0x47:0x67 0x48:0x68 0x49:0x69
    _db.print_state();
+   // compare(std::map<uint8_t,uint8_t>{{0x41,0x61},{0x42,0x62},{0x43,0x63},{0x44,0x64},{0x45,0x65},
+   //                                   {0x46,0x66},{0x47,0x67},{0x48,0x68},{0x49,0x69},{0x4A,0x6A}}, _db.get_as_map());
    // BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
    //                                                                       {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
 
-   _db.undo();
+   // _db.undo();
 
    // _state:
-   _db.print_state();
+   // _db.print_state();
+   // compare(std::map<uint8_t,uint8_t>{}, _db.get_as_map());
    // BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
 }
 

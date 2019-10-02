@@ -4,6 +4,7 @@
  */
 
 #include <iostream>    // std::cout
+#include <string>      // std::move
 #include <type_traits> // std::is_pointer
 #include <utility>     // std::move
 
@@ -105,21 +106,20 @@ namespace chainrocks {
    }
 
    void database::print_state() {
-      std::cout << "_state:\n";
+      std::cout << "_db:\n";
       rocksdb::Iterator* iter{_state.db()->NewIterator(_state.options().read_options())};
       for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
-         std::cout << iter->key().ToString() << ':' << iter->value().ToString() << '\n';
+         std::cout << iter->key().ToString() << ':' << iter->value().ToString() << ' ';
       }
       assert(iter->status().ok()); // Check for any errors found during the scan
       delete iter;
    }
 
-   std::map<uint8_t,uint8_t> database::get_as_map() {
-      std::map<uint8_t,uint8_t> ret;
+   std::map<std::string,std::string> database::get_as_map() {
+      std::map<std::string,std::string> ret;
       rocksdb::Iterator* iter{_state.db()->NewIterator(_state.options().read_options())};
       for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
-         ret[*reinterpret_cast<uint8_t*>(iter->key().ToString())] = *reinterpret_cast<uint8_t*>(iter->value().ToString());
-         // std::cout << iter->key().ToString() << ':' << iter->value().ToString() << '\n';
+         ret[iter->key().ToString()] = iter->value().ToString();
       }
       assert(iter->status().ok()); // Check for any errors found during the scan
       delete iter;
