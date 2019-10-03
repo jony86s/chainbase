@@ -49,10 +49,12 @@ namespace chainrocks {
    }
 
    void database::put_batch(const std::vector<uint8_t> key, const std::vector<uint8_t>& value) {
+      _on_put(key, value);
       _state.put_batch(key, value);
    }
 
    void database::remove_batch(const std::vector<uint8_t> key) {
+      _on_remove(key);
       _state.remove_batch(key);
    }
 
@@ -106,11 +108,12 @@ namespace chainrocks {
    }
 
    void database::print_state() {
-      std::cout << "_db:\n";
+      std::cout << "_db: ";
       rocksdb::Iterator* iter{_state.db()->NewIterator(_state.options().read_options())};
       for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
          std::cout << iter->key().ToString() << ':' << iter->value().ToString() << ' ';
       }
+      std::cout << '\n';
       assert(iter->status().ok()); // Check for any errors found during the scan
       delete iter;
    }
@@ -182,18 +185,21 @@ namespace chainrocks {
    void database::_undo_new_keys(undo_state&& head) {
       for (auto&& key : head.new_keys()) {
          _state.remove(key);
+         _state.remove_batch(key); // IMPORTANT
       }
    }
 
    void database::_undo_modified_values(undo_state&& head) {
       for (auto&& modified_value : head.modified_values()) {
          _state.put(modified_value.first, modified_value.second);
+         _state.put_batch(modified_value.first, modified_value.second); // IMPORTANT
       }
    }
 
    void database::_undo_removed_values(undo_state&& head) {
       for (auto&& removed_value : head.removed_values()) {
          _state.put(removed_value.first, removed_value.second);
+         _state.put_batch(removed_value.first, removed_value.second); // IMPORTANT
       }
    }
 

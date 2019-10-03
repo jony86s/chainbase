@@ -274,7 +274,7 @@ namespace chainrocks {
       /**
        * Return all the database as a `std::map`.
        */
-      std::map<uint8_t,uint8_t> get_as_map();
+      std::map<std::string,std::string> get_as_map();
 
       /**
        * Implementation of the logic of starting/stopping/operating on
