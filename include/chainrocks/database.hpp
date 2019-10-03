@@ -54,7 +54,7 @@ namespace chainrocks {
       /**
        * Returns the deque of undo state objects.
        */
-      const std::deque<undo_state>& stack() const;
+      std::deque<undo_state>& stack();
 
       /**
        * Add a new key/value pair to `_state`, or modify an existing

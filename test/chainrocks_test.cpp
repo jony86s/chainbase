@@ -45,21 +45,23 @@ void compare(const std::map<std::string,std::string>& correct_vec, const std::ma
  * `undo`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
  * _db:
  */
 BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
+   std::cout << "TEST_ONE\n";
+   
    // _db:
    _db.print_state();
    compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-   _db.start_undo_session(true);
+   auto session{_db.start_undo_session(true)};
    for (size_t i{0}; i < 10; ++i) {
-      _db.put_batch(keys0[i], values0[i]);
+      _db.put(keys0[i], values0[i]);
    }
    _db.write_batch();
 
-   // _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
    _db.print_state();
    compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
                                              {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
@@ -69,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
 
    // _state:
    _db.print_state();
-   // compare(std::map<std::string,std::string>{}, _db.get_as_map());
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 }
 
 /**
@@ -81,43 +83,48 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `undo`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j K:k L:l M:m N:n O:o P:p Q:q R:r S:s T:t
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
  */
-// BOOST_FIXTURE_TEST_CASE(test_two, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_two, database_fixture) {
+   std::cout << "TEST_TWO\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    for (size_t i{}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   for (size_t i{}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys1[i], values1[i]);
-//    }
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys1[i], values1[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j 10k 11l 12m 13n 14o 15p 16q 17r 18s 19t
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{ 0ULL,"a"},{ 1ULL,"b"},{ 2ULL,"c"},{ 3ULL,"d"},{ 4ULL,"e"},
-//                                                                                { 5ULL,"f"},{ 6ULL,"g"},{ 7ULL,"h"},{ 8ULL,"i"},{ 9ULL,"j"},
-//                                                                                {10ULL,"k"},{11ULL,"l"},{12ULL,"m"},{13ULL,"n"},{14ULL,"o"},
-//                                                                                {15ULL,"p"},{16ULL,"q"},{17ULL,"r"},{18ULL,"s"},{19ULL,"t"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"},
+                                             {"k","K"},{"l","L"},{"m","M"},{"n","N"},{"o","O"},
+                                             {"p","P"},{"q","Q"},{"r","R"},{"s","S"},{"t","T"}}, _db.get_as_map());
 
-//    _db.undo();
+   _db.undo();
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #3:
@@ -128,41 +135,46 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `undo`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
- * _db: A:k B:l C:m D:n E:o F:p G:q H:r I:s J:t 
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+ * _db: k:A l:B m:C n:D o:E p:F q:G r:H s:I t:J 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
  */
-// BOOST_FIXTURE_TEST_CASE(test_three, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_three, database_fixture) {
+   std::cout << "TEST_THREE\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    for (size_t i{}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   for (size_t i{}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0k 1l 2m 3n 4o 5p 6q 7r 8s 9t
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values1[i]);
-//    }
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values1[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0k 1l 2m 3n 4o 5p 6q 7r 8s 9t
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"k"},{1ULL,"l"},{2ULL,"m"},{3ULL,"n"},{4ULL,"o"},
-//                                                                                {5ULL,"p"},{6ULL,"q"},{7ULL,"r"},{8ULL,"s"},{9ULL,"t"}}) );
+   // _db: k:A l:B m:C n:D o:E p:F q:G r:H s:I t:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","K"},{"b","L"},{"c","M"},{"d","N"},{"e","O"},
+                                             {"f","P"},{"g","Q"},{"h","R"},{"i","S"},{"j","T"}}, _db.get_as_map());
 
-//    _db.undo();
+   _db.undo();
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #4:
@@ -173,40 +185,45 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `undo`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j 
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
  */
-// BOOST_FIXTURE_TEST_CASE(test_four, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_four, database_fixture) {
+   std::cout << "TEST_FOUR\n";
 
-//    for (size_t i{}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   for (size_t i{}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.remove(keys0[i]);
-//    }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.remove(keys0[i]);
+   }
+   _db.write_batch();
 
-//    _db.undo();
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   _db.undo();
+   _db.write_batch();
+
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J 
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #5:
@@ -218,43 +235,48 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `undo_all`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j K:k L:l M:m N:n O:o P:p Q:q R:r S:s T:t
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
  * _db:
  */
-// BOOST_FIXTURE_TEST_CASE(test_five, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_five, database_fixture) {
+   std::cout << "TEST_FIVE\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    auto session0{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   auto session0{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session1{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys1[i], values1[i]);
-//    }
+   auto session1{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys1[i], values1[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j 10k 11l 12m 13n 14o 15p 16q 17r 18s 19t
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{ 0ULL,"a"},{ 1ULL,"b"},{ 2ULL,"c"},{ 3ULL,"d"},{ 4ULL,"e"},
-//                                                                                { 5ULL,"f"},{ 6ULL,"g"},{ 7ULL,"h"},{ 8ULL,"i"},{ 9ULL,"j"},
-//                                                                                {10ULL,"k"},{11ULL,"l"},{12ULL,"m"},{13ULL,"n"},{14ULL,"o"},
-//                                                                                {15ULL,"p"},{16ULL,"q"},{17ULL,"r"},{18ULL,"s"},{19ULL,"t"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"},
+                                             {"k","K"},{"l","L"},{"m","M"},{"n","N"},{"o","O"},
+                                             {"p","P"},{"q","Q"},{"r","R"},{"s","S"},{"t","T"}}, _db.get_as_map());
 
-//    _db.undo_all();
+   _db.undo_all();
+   _db.write_batch();
 
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
-// }
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
+}
 
 /**
  * Testing `database` functionality:
@@ -271,51 +293,54 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `squash`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j K:k L:l M:m N:n O:o P:p Q:q R:r S:s T:t
- * _new_keys<0>: A B C D E F G H I J
- * _new_keys<1>: K L M N O P Q R S T
- * _new_keys<0>: A B C D E F G H I J K L M N O P Q R S T
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
+ * _db._stack._new_keys<0>: a b c d e f g h i j
+ * _db._stack._new_keys<1>: k l m n o p q r s t
+ * _db._stack._new_keys<0>: a b c d e f g h i j k l m n o p q r s t
  */
-// BOOST_FIXTURE_TEST_CASE(test_six, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_six, database_fixture) {
+   std::cout << "TEST_SIX\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    auto session0{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   auto session0{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session1{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys1[i], values1[i]);
-//    }
+   auto session1{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys1[i], values1[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j 10k 11l 12m 13n 14o 15p 16q 17r 18s 19t
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{ 0ULL,"a"},{ 1ULL,"b"},{ 2ULL,"c"},{ 3ULL,"d"},{ 4ULL,"e"},
-//                                                                                { 5ULL,"f"},{ 6ULL,"g"},{ 7ULL,"h"},{ 8ULL,"i"},{ 9ULL,"j"},
-//                                                                                {10ULL,"k"},{11ULL,"l"},{12ULL,"m"},{13ULL,"n"},{14ULL,"o"},
-//                                                                                {15ULL,"p"},{16ULL,"q"},{17ULL,"r"},{18ULL,"s"},{19ULL,"t"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J k:K l:L m:M n:N o:O p:P q:Q r:R s:S t:T
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"},
+                                             {"k","K"},{"l","L"},{"m","M"},{"n","N"},{"o","O"},
+                                             {"p","P"},{"q","Q"},{"r","R"},{"s","S"},{"t","T"}}, _db.get_as_map());
 
-//    // new_keys: 0 1 2 3 4 5 6 7 8 9
-//    // new_keys: 10 11 12 13 14 15 16 17 18 19
-//    _db.print_keys();
-//    BOOST_TEST_REQUIRE( (_db.stack()[_db.stack().size()-2]._new_keys) == (std::set<uint64_t>{0ULL,1ULL,2ULL,3ULL,4ULL,5ULL,6ULL,7ULL,8ULL,9ULL}) );
+   // _db._stack._new_keys<0>: a b c d e f g h i j
+   // _db._stack._new_keys<1>: k l m n o p q r s t
+   BOOST_TEST_REQUIRE( (_db.stack()[_db.stack().size()-2].new_keys()) == (std::set<std::vector<uint8_t>>{{'a'},{'b'},{'c'},{'d'},{'e'},{'f'},{'g'},{'h'},{'i'},{'j'}}) );
+   BOOST_TEST_REQUIRE( (_db.stack()[_db.stack().size()-1].new_keys()) == (std::set<std::vector<uint8_t>>{{'k'},{'l'},{'m'},{'n'},{'o'},{'p'},{'q'},{'r'},{'s'},{'t'}}) );
 
-//    _db.squash();
+   _db.squash();
 
-//    // new_keys: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
-//    _db.print_keys();
-//    BOOST_TEST_REQUIRE( (_db.stack().back()._new_keys) == (std::set<uint64_t>{ 0ULL, 1ULL, 2ULL, 3ULL, 4ULL, 5ULL, 6ULL, 7ULL, 8ULL, 9ULL,
-//                                                                                    10ULL,11ULL,12ULL,13ULL,14ULL,15ULL,16ULL,17ULL,18ULL,19ULL}) );
-// }
+   // _db._stack._new_keys<0>: a b c d e f g h i j k l m n o p q r s t
+   BOOST_TEST_REQUIRE( (_db.stack().back().new_keys()) == (std::set<std::vector<uint8_t>>{ {'a'},{'b'},{'c'},{'d'},{'e'},{'f'},{'g'},{'h'},{'i'},{'j'},
+                                                                                           {'k'},{'l'},{'m'},{'n'},{'o'},{'p'},{'q'},{'r'},{'s'},{'t'}}) );
+}
 
 /**
  * Test #7:
@@ -327,42 +352,46 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `squash`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:k B:l C:m D:n E:o F:f G:g H:h I:i J:j
- * _db: A:k B:l C:m D:n E:o F:f G:g H:h I:i J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: k:A l:B m:C n:D o:E f:F g:G h:H i:I j:J
+ * _db: k:A l:B m:C n:D o:E f:F g:G h:H i:I j:J
  */
-// BOOST_FIXTURE_TEST_CASE(test_seven, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_seven, database_fixture) {
+   std::cout << "TEST_SEVEN\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    auto session0{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   auto session0{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session1{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 5; ++i) {
-//       _db.put(keys0[i], values1[i]);
-//    }
+   auto session1{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 5; ++i) {
+      _db.put(keys0[i], values1[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0k 1l 2m 3n 4o 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"k"},{1ULL,"l"},{2ULL,"m"},{3ULL,"n"},{4ULL,"o"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: k:A l:B m:C n:D o:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","K"},{"b","L"},{"c","M"},{"d","N"},{"e","O"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    _db.squash();
+   _db.squash();
 
-//    // _state: 0k 1l 2m 3n 4o 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"k"},{1ULL,"l"},{2ULL,"m"},{3ULL,"n"},{4ULL,"o"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   // _db: k:A l:B m:C n:D o:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","K"},{"b","L"},{"c","M"},{"d","N"},{"e","O"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #8:
@@ -375,49 +404,54 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * `squash`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: F:f G:g H:h I:i J:j
- * _db: J:j
- * _db: J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: f:F g:G h:H i:I j:J
+ * _db: j:J
+ * _db: j:J
  */
-// BOOST_FIXTURE_TEST_CASE(test_eight, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_eight, database_fixture) {
+   std::cout << "TEST_EIGHT\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    for (size_t i{}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   for (size_t i{}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session0{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 5; ++i) {
-//       _db.remove(keys0[i]);
-//    }
+   auto session0{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 5; ++i) {
+      _db.remove(keys0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session1{_db.start_undo_session(true)};
-//    for (size_t i{5}; i < 9; ++i) {
-//       _db.remove(keys0[i]);
-//    }
+   auto session1{_db.start_undo_session(true)};
+   for (size_t i{5}; i < 9; ++i) {
+      _db.remove(keys0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{9ULL,"j"}}) );
+   // _db: j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"j","J"}}, _db.get_as_map());
 
-//    _db.squash();
+   _db.squash();
 
-//    // _state: 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{9ULL,"j"}}) );
-// }
+   // _db: j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Testing `database` functionality:
@@ -433,30 +467,34 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * End RAII `}`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
  * _db:
  */
-// BOOST_FIXTURE_TEST_CASE(test_nine, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_nine, database_fixture) {
+   std::cout << "TEST_NINE\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    {
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   {
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-//    }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   }
+   _db.write_batch();
 
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
-// }
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
+}
 
 /**
  * Test #10:
@@ -467,31 +505,34 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * End RAII `}`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
  */
-// BOOST_FIXTURE_TEST_CASE(test_ten, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_ten, database_fixture) {
+   std::cout << "TEST_TEN\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    auto session{_db.start_undo_session(true)};
-//    {
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   auto session{_db.start_undo_session(true)};
+   {
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-//    }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   }
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #11:
@@ -503,32 +544,35 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * End RAII `}`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
  */
-// BOOST_FIXTURE_TEST_CASE(test_eleven, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_eleven, database_fixture) {
+   std::cout << "TEST_ELEVEN\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    {
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   {
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-//    session.push();
-//    }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   session.push();
+   }
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-// }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+}
 
 /**
  * Test #12:
@@ -540,42 +584,47 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
  * End RAII `}`
  *
  * _db:
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
- * _db: A:a B:b C:c D:d E:e F:f G:g H:h I:i J:j
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db:
  */
-// BOOST_FIXTURE_TEST_CASE(test_twelve, database_fixture) {
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+BOOST_FIXTURE_TEST_CASE(test_twelve, database_fixture) {
+   std::cout << "TEST_TWELVE\n";
+   
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    {
-//    auto session{_db.start_undo_session(true)};
-//    for (size_t i{0}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
+   {
+   auto session{_db.start_undo_session(true)};
+   for (size_t i{0}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
-//    session.push();
-//    }
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   session.push();
+   }
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    _db.undo();
+   _db.undo();
+   _db.write_batch();
 
-//    // _state:
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
-// }
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
+}
 
-// /**
-//  * Other tests.
-//  */
+/**
+ * Other tests.
+ */
 
 // /**
 //  * Test #13:
@@ -587,135 +636,59 @@ BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
 //  * Put `_state` 0a
 //  * `squash`
 //  * Remove some `_state`
+//  *
+//  * _db:
+//  * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+//  * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+//  * _db: j:J
+//  * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
 //  */
 // BOOST_FIXTURE_TEST_CASE(test_thirteen, database_fixture) {
-//    // _state:
+//    std::cout << "TEST_THIRTEEN\n";
+   
+//    // _db:
 //    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{}) );
+//    compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
 //    for (size_t i{}; i < 10; ++i) {
 //       _db.put(keys0[i], values0[i]);
 //    }
+//    _db.write_batch();
 
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
+//    // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
 //    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+//    compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+//                                              {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
 //    auto session0{_db.start_undo_session(true)};
 //    _db.remove(keys0[0]);
+//    _db.write_batch();
 
-//    // _state: 1b 2c 3d 4e 5f 6g 7h 8i 9j
+//    // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
 //    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"}, {5ULL,"f"},
-//                                                                                {6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+//    compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
+//                                              {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
 //    auto session1{_db.start_undo_session(true)};
 //    _db.put(keys0[0], values0[0]);
+//    _db.write_batch();
 
-//    // _state: 9j
+//    // _db: j:J
 //    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{0ULL,"a"},{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"},
-//                                                                                {5ULL,"f"},{6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+//    compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+//                                              {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
 //    _db.squash();
 
 //    // Under my previous implementation this would throw, which is incorrect behavior.
 //    // Now, under the fixed implementation, this should now throw.
+//    // Update: ^ What?
 //    _db.remove(keys0[0]);
+//    _db.write_batch();
 
-//    // _state: 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    _db.print_state();
-//    BOOST_TEST_REQUIRE( (_db.state()) == (std::map<uint64_t, std::string>{{1ULL,"b"},{2ULL,"c"},{3ULL,"d"},{4ULL,"e"}, {5ULL,"f"},
-//                                                                                {6ULL,"g"},{7ULL,"h"},{8ULL,"i"},{9ULL,"j"}}) );
+//    // // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+//    // _db.print_state();
+//    // compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
+//    //                                           {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
    
-// BOOST_AUTO_TEST_SUITE_END()
-
-
-
-
-
-
-
-// /// Test data.
-// static const uint64_t keys0[10]{ 0ULL, 1ULL, 2ULL, 3ULL, 4ULL, 5ULL, 6ULL, 7ULL, 8ULL, 9ULL};
-// static const std::string values0[10]{"a","b","c","d","e","f","g","h","i","j"};
-
-// ///////////////////////////////////
-// /// Testing `rocksdb` functionality
-
-// BOOST_FIXTURE_TEST_CASE(test_one, database_fixture) {
-//    // _state:
-//    database.print_state();
-//    for (size_t i{0}; i < 10; ++i) {
-//       database.rocksdb_put(keys0[i], values0[i]);
-//    }
-
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    database.print_state();
-
-//    for (size_t i{}; i < 10; ++i) {
-//       BOOST_TEST_REQUIRE( (database.rocksdb_does_key_exist(keys0[i])) == (true) );
-//    }
-// }
-
-// BOOST_FIXTURE_TEST_CASE(test_two, database_fixture) {
-//    // _state:
-//    database.print_state();
-//    for (size_t i{0}; i < 10; ++i) {
-//       database.rocksdb_put(keys0[i], values0[i]);
-//    }
-
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    database.print_state();
-
-//    for (size_t i{0}; i < 10; ++i) {
-//       database.rocksdb_remove(keys0[i]);
-//    }
-
-//    // _state:
-//    database.print_state();
-
-//    for (size_t i{}; i < 10; ++i) {
-//       BOOST_TEST_REQUIRE( (database.rocksdb_does_key_exist(keys0[i])) == (false) );
-//    }
-// }
-
-// BOOST_FIXTURE_TEST_CASE(test_three, database_fixture) {
-//    // _state:
-//    database.print_state();
-//    for (size_t i{0}; i < 10; ++i) {
-//       database.rocksdb_put(keys0[i], values0[i]);
-//    }
-
-//    // _state: 0a 1b 2c 3d 4e 5f 6g 7h 8i 9j
-//    database.print_state();
-
-//    {
-//    std::string value;
-//    for (size_t i{}; i < 10; ++i) {
-//       database.rocksdb_get(keys0[i], value);
-//       BOOST_TEST_REQUIRE( (value) == (values0[i]) );
-//    }
-//    }
-
-//    for (size_t i{0}; i < 10; ++i) {
-//       database.rocksdb_remove(keys0[i]);
-//    }
-
-//    // _state:
-//    database.print_state();
-
-//    // Note that according to the current implementation the string
-//    // "Encountered error: 1" will print out due to the checking of the
-//    // internal `_status` code when performing a `Get` in rocksDB; in
-//    // this case the `_status` code is a 1 because the value will not
-//    // be found in the database.
-//    {
-//    std::string value;
-//    for (size_t i{}; i < 10; ++i) {
-//       database.rocksdb_get(keys0[i], value);
-//       BOOST_TEST_REQUIRE( (value) == ("") );
-//    }
-//    }
-// BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_SUITE_END()

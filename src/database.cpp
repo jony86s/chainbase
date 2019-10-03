@@ -26,18 +26,18 @@ namespace chainrocks {
       return _state;
    }
 
-   const std::deque<undo_state>& database::stack() const {
+   std::deque<undo_state>& database::stack() {
       return _stack;
    }
 
    void database::put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value) {
       _on_put(key, value);
-      _state.put(key, value);
+      put_batch(key, value);
    }
 
    void database::remove(const std::vector<uint8_t>& key) {
       _on_remove(key);
-      _state.remove(key);
+      remove_batch(key);
    }
 
    void database::get(const std::vector<uint8_t> key, std::string &value) {
@@ -49,12 +49,10 @@ namespace chainrocks {
    }
 
    void database::put_batch(const std::vector<uint8_t> key, const std::vector<uint8_t>& value) {
-      _on_put(key, value);
       _state.put_batch(key, value);
    }
 
    void database::remove_batch(const std::vector<uint8_t> key) {
-      _on_remove(key);
       _state.remove_batch(key);
    }
 
@@ -184,22 +182,19 @@ namespace chainrocks {
 
    void database::_undo_new_keys(undo_state&& head) {
       for (auto&& key : head.new_keys()) {
-         _state.remove(key);
-         _state.remove_batch(key); // IMPORTANT
+         _state.remove_batch(key);
       }
    }
 
    void database::_undo_modified_values(undo_state&& head) {
       for (auto&& modified_value : head.modified_values()) {
-         _state.put(modified_value.first, modified_value.second);
-         _state.put_batch(modified_value.first, modified_value.second); // IMPORTANT
+         _state.put_batch(modified_value.first, modified_value.second);
       }
    }
 
    void database::_undo_removed_values(undo_state&& head) {
       for (auto&& removed_value : head.removed_values()) {
-         _state.put(removed_value.first, removed_value.second);
-         _state.put_batch(removed_value.first, removed_value.second); // IMPORTANT
+         _state.put_batch(removed_value.first, removed_value.second);
       }
    }
 
