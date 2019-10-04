@@ -141,6 +141,7 @@ namespace chainrocks {
       if (!_enabled()) {
          return;
       }
+      
       auto& head = _stack.back();
       head.new_keys().insert(key);
    }

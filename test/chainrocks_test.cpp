@@ -626,69 +626,67 @@ BOOST_FIXTURE_TEST_CASE(test_twelve, database_fixture) {
  * Other tests.
  */
 
-// /**
-//  * Test #13:
-//  *
-//  * Pre-fill state
-//  * `start_undo_session`
-//  * Remove `_state` 0a
-//  * `start_undo_session`
-//  * Put `_state` 0a
-//  * `squash`
-//  * Remove some `_state`
-//  *
-//  * _db:
-//  * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//  * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//  * _db: j:J
-//  * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//  */
-// BOOST_FIXTURE_TEST_CASE(test_thirteen, database_fixture) {
-//    std::cout << "TEST_THIRTEEN\n";
+/**
+ * Test #13:
+ *
+ * Pre-fill state
+ * `start_undo_session`
+ * Remove `_state` 0a
+ * `start_undo_session`
+ * Put `_state` 0a
+ * `squash`
+ * Remove some `_state`
+ *
+ * _db:
+ * _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ * _db: j:J
+ * _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+ */
+BOOST_FIXTURE_TEST_CASE(test_thirteen, database_fixture) {
+   std::cout << "TEST_THIRTEEN\n";
    
-//    // _db:
-//    _db.print_state();
-//    compare(std::map<std::string,std::string>{}, _db.get_as_map());
+   // _db:
+   _db.print_state();
+   compare(std::map<std::string,std::string>{}, _db.get_as_map());
 
-//    for (size_t i{}; i < 10; ++i) {
-//       _db.put(keys0[i], values0[i]);
-//    }
-//    _db.write_batch();
+   for (size_t i{}; i < 10; ++i) {
+      _db.put(keys0[i], values0[i]);
+   }
+   _db.write_batch();
 
-//    // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//    _db.print_state();
-//    compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
-//                                              {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session0{_db.start_undo_session(true)};
-//    _db.remove(keys0[0]);
-//    _db.write_batch();
+   auto session0{_db.start_undo_session(true)};
+   _db.remove(keys0[0]);
+   _db.write_batch();
 
-//    // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//    _db.print_state();
-//    compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
-//                                              {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
+                                             {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    auto session1{_db.start_undo_session(true)};
-//    _db.put(keys0[0], values0[0]);
-//    _db.write_batch();
+   auto session1{_db.start_undo_session(true)};
+   _db.put(keys0[0], values0[0]);
+   _db.write_batch();
 
-//    // _db: j:J
-//    _db.print_state();
-//    compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
-//                                              {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   // _db: a:A b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   _db.print_state();
+   compare(std::map<std::string,std::string>{{"a","A"},{"b","B"},{"c","C"},{"d","D"},{"e","E"},
+                                             {"f","F"},{"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
 
-//    _db.squash();
+   // TODO: Come back to this logic. It seems very suspect.
+   // _db.squash();
 
-//    // Under my previous implementation this would throw, which is incorrect behavior.
-//    // Now, under the fixed implementation, this should now throw.
-//    // Update: ^ What?
-//    _db.remove(keys0[0]);
-//    _db.write_batch();
+   // _db.remove(keys0[0]);
+   // _db.write_batch();
 
-//    // // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
-//    // _db.print_state();
-//    // compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
-//    //                                           {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
+   // // _db: b:B c:C d:D e:E f:F g:G h:H i:I j:J
+   // _db.print_state();
+   // compare(std::map<std::string,std::string>{{"b","B"},{"c","C"},{"d","D"},{"e","E"},{"f","F"},
+   //                                           {"g","G"},{"h","H"},{"i","I"},{"j","J"}}, _db.get_as_map());
    
 BOOST_AUTO_TEST_SUITE_END()
