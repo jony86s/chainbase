@@ -30,30 +30,30 @@ namespace chainrocks {
       return _stack;
    }
 
-   void database::put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value) {
+   void database::put(const byte_vector& key, const byte_vector& value) {
       _on_put(key, value);
       put_batch(key, value);
    }
 
-   void database::remove(const std::vector<uint8_t>& key) {
+   void database::remove(const byte_vector& key) {
       _on_remove(key);
       remove_batch(key);
    }
 
-   void database::get(const std::vector<uint8_t> key, std::string &value) {
-      _state.get(key, value);
+   void database::get(const byte_vector key, std::string &value) {
+      _state.get(key.value(), value);
    }
       
-   bool database::does_key_exist(const std::vector<uint8_t> key, std::string tmp) {
-      return _state.does_key_exist(key, tmp);
+   bool database::does_key_exist(const byte_vector key, std::string tmp) {
+      return _state.does_key_exist(key.value(), tmp);
    }
 
-   void database::put_batch(const std::vector<uint8_t> key, const std::vector<uint8_t>& value) {
-      _state.put_batch(key, value);
+   void database::put_batch(const byte_vector key, const byte_vector& value) {
+      _state.put_batch(key.value(), value.value());
    }
 
-   void database::remove_batch(const std::vector<uint8_t> key) {
-      _state.remove_batch(key);
+   void database::remove_batch(const byte_vector key) {
+      _state.remove_batch(key.value());
    }
 
    void database::write_batch() {
@@ -137,47 +137,47 @@ namespace chainrocks {
       }
    }
 
-   void database::_on_create(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value) {
+   void database::_on_create(const byte_vector& key, const byte_vector& value) {
       if (!_enabled()) {
          return;
       }
       
       auto& head = _stack.back();
-      head.new_keys().insert(key);
+      head.new_keys().insert(key.value());
    }
 
-   void database::_on_put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value) {
+   void database::_on_put(const byte_vector& key, const byte_vector& value) {
       if (!_enabled()) {
          return;
       }
 
       auto& head = _stack.back();
 
-      if (!_state.does_key_exist(key)) {
+      if (!_state.does_key_exist(key.value())) {
          _on_create(key, value);
          return;
       }
       else {
          std::string tmp;
-         _state.get(key, tmp);
-         head.modified_values().emplace(key, std::vector<uint8_t>(tmp.cbegin(), tmp.cend()));
+         _state.get(key.value(), tmp);
+         head.modified_values().emplace(key.value(), byte_vector(std::in_place, tmp.cbegin(), tmp.cend()).value());
       }
    }
 
-   void database::_on_remove(const std::vector<uint8_t>& key) {
+   void database::_on_remove(const byte_vector& key) {
       if (!_enabled()) {
          return;
       }
       else {
          auto& head = _stack.back();
 
-         if (head.removed_values().find(key) != head.removed_values().cend()) {
+         if (head.removed_values().find(key.value()) != head.removed_values().cend()) {
             BOOST_THROW_EXCEPTION(std::runtime_error{"on_remove"});
          }
 
          std::string tmp{};
-         _state.get(key, tmp);
-         head.removed_values()[key] = std::vector<uint8_t>(tmp.cbegin(), tmp.cend());
+         _state.get(key.value(), tmp);
+         head.removed_values()[key.value()] = byte_vector(std::in_place, tmp.cbegin(), tmp.cend()).value();
       }
    }
 

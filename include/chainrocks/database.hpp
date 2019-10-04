@@ -10,6 +10,7 @@
 
 #include <boost/filesystem.hpp> // boost::filesystem::path
 
+#include "common.hpp"         // byte_vector
 #include "rocksdb_backend.hpp" // chainrocks::rocksdb_backend
 #include "undo_state.hpp"      // chainrocks::undo_state
 
@@ -60,34 +61,34 @@ namespace chainrocks {
        * Add a new key/value pair to `_state`, or modify an existing
        * key/value pair.
        */
-      void put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value);
+      void put(const byte_vector& key, const byte_vector& value);
 
       /**
        * Remove a key/value pair from `_state`.
        */
-      void remove(const std::vector<uint8_t>& key);
+      void remove(const byte_vector& key);
 
       /**
        * Get a value from a key/value pair from `_state`.
        */
-      void get(const std::vector<uint8_t> key, std::string &value);
+      void get(const byte_vector key, std::string &value);
 
       /**
        * Check if a specific key/value pair exists in `_state`.
        */
-      bool does_key_exist(const std::vector<uint8_t> key, std::string tmp = {});
+      bool does_key_exist(const byte_vector key, std::string tmp = {});
 
       /**
        * Perform a batch write; defferring to realize the operation
        * until `write_batch` has been called.
        */
-      void put_batch(const std::vector<uint8_t> key, const std::vector<uint8_t>& value);
+      void put_batch(const byte_vector key, const byte_vector& value);
 
       /**
        * Perform a batch remove; defferring to realize the operation
        * until `write_batch` has been called.
        */
-      void remove_batch(const std::vector<uint8_t> key);
+      void remove_batch(const byte_vector key);
 
       /**
        * Perform all batch operations; realizing all batch operations.
@@ -374,19 +375,19 @@ namespace chainrocks {
        * Update the mapping `_new_keys` of the most recently created
        * `undo_state` object.
        */
-      void _on_create(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value);
+      void _on_create(const byte_vector& key, const byte_vector& value);
 
       /**
        * Update the mapping `_modified_values` of the most recently
        * created `undo_state` object.
        */
-      void _on_put(const std::vector<uint8_t>& key, const std::vector<uint8_t>& value);
+      void _on_put(const byte_vector& key, const byte_vector& value);
 
       /**
        * Update the mapping `_removed_values` of the most recently
        * created `undo_state` object.
        */
-      void _on_remove(const std::vector<uint8_t>& key);
+      void _on_remove(const byte_vector& key);
 
       /**
        * Effectively erase any new key/value pairs introduced to
