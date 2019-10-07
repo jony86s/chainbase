@@ -15,9 +15,9 @@
 #include <rocksdb/iterator.h> // rocksdb::WriteBatch
 
 namespace chainrocks {
-   database::database(const boost::filesystem::path& database_dir)
+   database::database(const boost::filesystem::path& database_dir, const boost::filesystem::path& undo_state_dir)
       : _state{database_dir}
-      , _stack{}
+      , _stack{undo_state_dir}
       , _revision{}
    {
    }

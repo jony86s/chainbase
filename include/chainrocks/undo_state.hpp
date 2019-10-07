@@ -9,6 +9,8 @@
 #include <map>    // std::map
 #include <vector> // std::vector
 
+#include "rocksdb_backend.hpp"
+
 namespace chainrocks {
    /**
     * Implementation of an object with undo state.
@@ -29,22 +31,22 @@ namespace chainrocks {
       /**
        * Constructor; normal operation.
        */
-      undo_state();
+      undo_state(const boost::filesystem::path& database_dir);
 
       /**
        * Returns the modified values in this undo state.
        */
-      std::map<std::vector<uint8_t>, std::vector<uint8_t>>& modified_values();
+      std::map<std::vector<uint8_t>, std::vector<uint8_t>> modified_values();
 
       /**
        * Returns the removed values in this undo state.
        */
-      std::map<std::vector<uint8_t>, std::vector<uint8_t>>& removed_values();
+      std::map<std::vector<uint8_t>, std::vector<uint8_t>> removed_values();
 
       /**
        * Returns the new keys added in this undo state.
        */
-      std::set<std::vector<uint8_t>>& new_keys();
+      std::set<std::vector<uint8_t>> new_keys();
 
       /**
        * Returns the revision number of this undo state.
@@ -53,19 +55,9 @@ namespace chainrocks {
 
    private:
       /**
-       * Mapping to hold any modifications made to `_state`.
+       * Database to hold any modifications made to `_state`.
        */
-      std::map<std::vector<uint8_t>, std::vector<uint8_t>> _modified_values;
-
-      /**
-       * Mapping to hold any removed values from `_state`.
-       */
-      std::map<std::vector<uint8_t>, std::vector<uint8_t>> _removed_values;
-
-      /**
-       * Set representing new keys that have been edded to `_state`.
-       */
-      std::set<std::vector<uint8_t>> _new_keys;
+      rocksdb_backend _db;
 
       /**
        * The unique revision number held by each `undo_state` object.

@@ -79,8 +79,8 @@ if(WIN32)
    target_link_libraries( chainbase ws2_32 mswsock )
 endif()
 
-add_subdirectory( bench )
-add_subdirectory( test )
+# add_subdirectory( bench )
+# add_subdirectory( test )
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/chainbase DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR})
 
 install(TARGETS chainbase

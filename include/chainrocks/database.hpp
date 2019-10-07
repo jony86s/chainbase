@@ -10,7 +10,7 @@
 
 #include <boost/filesystem.hpp> // boost::filesystem::path
 
-#include "common.hpp"         // byte_vector
+#include "common.hpp"          // byte_vector
 #include "rocksdb_backend.hpp" // chainrocks::rocksdb_backend
 #include "undo_state.hpp"      // chainrocks::undo_state
 
@@ -31,7 +31,7 @@ namespace chainrocks {
       /**
        * Constructor; normal operation.
        */
-      database(const boost::filesystem::path& database_dir);
+      database(const boost::filesystem::path& database_dir, const boost::filesystem::path& undo_state_dir);
 
       /**
        * Destructor; normal operation.
