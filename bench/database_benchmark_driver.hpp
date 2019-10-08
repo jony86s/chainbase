@@ -145,6 +145,7 @@ void database_benchmark<Database>::_execution_loop() {
       _database.swap(_gen_data, i);
       session.squash();
       transactions_per_second += 2;
+      _database.write();
    }
 
    loggerman->print_progress(1,1);

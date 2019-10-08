@@ -114,7 +114,7 @@ double system_metrics::calculate_cpu_load(size_t idle_ticks, size_t total_ticks)
    _prev_total_ticks = total_ticks;
    _prev_idle_ticks  = idle_ticks;
    return ret;
-}
+} // USE ALL THREADS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #endif // __APPLE__
 
 #ifdef __linux__

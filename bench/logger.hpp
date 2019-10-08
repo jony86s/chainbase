@@ -23,56 +23,67 @@
  */
 class logger {
 public:
-   /**
-    * Constructor; normal operation.
-    */
-   logger();
+    /**
+     * Constructor; normal operation.
+     */
+    logger();
 
-   /**
-    * Log the progress of a construct to the console. With `n' being
-    * the numerator and `m' being the denominator multiplied by a
-    * factor of 100.
-    */
-   void print_progress(size_t n, size_t m);
+    /**
+     * Log the progress of a construct to the console. With `n' being
+     * the numerator and `m' being the denominator multiplied by a
+     * factor of 100.
+     */
+    void print_progress(size_t n, size_t m);
 
-   /**
-    * Flush all saved metrics to the specified file.
-    */
-   void flush_all();
+    /**
+     * Flush all saved metrics to the specified file.
+     */
+    void flush_all();
 
-   /**
-    * Save a TPS measurement to the TPS vector.
-    */
-   void log_tps(const std::pair<size_t,size_t>& p);
+    /**
+     * Save a CPU load measurement to the CPU load vector.
+     */
+    void log_cpu_load(const std::pair<size_t,double>& p);
 
-   /**
-    * Save a RAM usage measurement to the RAM usage vector.
-    */
-   void log_ram_usage(const std::pair<size_t,double>& p);
+    /**
+     * Save a RAM usage measurement to the RAM usage vector.
+     */
+    void log_ram_usage(const std::pair<size_t,double>& p);
 
-   /**
-    * Save a CPU load measurement to the CPU load vector.
-    */
-   void log_cpu_load(const std::pair<size_t,double>& p);
+    /**
+     * Save a Swap Usage measurement to the Swap Usage vector.
+     */
+    void log_swap_usage(const std::pair<size_t,size_t>& p);
+
+    /**
+     * Save a TPS measurement to the TPS vector.
+     */
+    void log_tps(const std::pair<size_t,size_t>& p);
 
 private:
-   /**
-    * Holds the TPS measurements.
-    */
-   std::vector<std::pair<size_t,size_t>> _tps;
+    /**
+     * Holds the CPU load measurements.
+     */
+    std::vector<std::pair<size_t,double>> _cpu_load;
 
-   /**
-    * Holds the RAM usage measurements.
-    */
-   std::vector<std::pair<size_t,double>> _ram_usage;
+    /**
+     * Holds the RAM usage measurements.
+     */
+    std::vector<std::pair<size_t,double>> _ram_usage;
 
-   /**
-    * Holds the CPU load measurements.
-    */
-   std::vector<std::pair<size_t,double>> _cpu_load;
+    /**
+     * Holds the Swap Usage measurements.
+     */
+    std::vector<std::pair<size_t,size_t>> _swap_usage;
+    
+    /**
+     * Holds the TPS measurements.
+     */
+    std::vector<std::pair<size_t,size_t>> _tps;
+   
 
-   /**
-    * File in which to log all metrics.
-    */
-   std::ofstream _data_file;
+    /**
+     * File in which to log all metrics.
+     */
+    std::ofstream _data_file;
 };
