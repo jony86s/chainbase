@@ -144,23 +144,11 @@ private:
    /**
     * Helper function to aid in the execution of the benchmark.
     */
-   void _execution_loop();
-
-   /**
-    * Helper function to aid in calculating the expanding window
-    * benchmark measurement.
-    */
-   size_t _expanding_window_metric(size_t tps);
+   void _execution_loop() __attribute__((optimize(0)));
 
    /**
     * Helper function to aid in calculating the narrow window
     * benchmark measurement.
     */
    size_t _narrow_window_metric(size_t tps);
-
-   /**
-    * Helper function to aid in calculating the rolling window
-    * benchmark measurement.
-    */
-   size_t _rolling_window_metric(size_t tps);
 };

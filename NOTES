@@ -1,0 +1,19 @@
+Chainbase
+=========
+- Performed test up to 690,000 accounts with 1,000,000 swaps
+- Switched to 100,000 swaps at 700,000 accounts
+* For some reason I am not entering swap-space..? Or will I eventually? (At this point in time)
+* Note: The 690,000 accounts 1,000,000 swaps results in chainbase-data.csv is:
+  2384, 4894, 3466, 3466.76, 3685.59
+* Note: I may have to manually do a couple larger benchmarks.
+- Switched to 10,000 swaps at 800,000 accounts
+* Note: The 790,000 accounts 100,000 swaps results in chainbase-data.csv is:
+  2108, 3772, 2948, 2934.68, 4063.5
+- The last test I ran was 830,000 accounts with 10,000 swaps
+  It was starting to become unbearably slow.
+* Note: The 830,000 accounts 10,000 swaps results in chainbase-data.csv is:
+  44, 128, 66, 70.5512, 4101.04
+
+Chainrocks
+==========
+# * Note: For chainrocks I am moving the completely. // ??? This still true?

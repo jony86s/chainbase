@@ -57,25 +57,11 @@ public:
    size_t seconds_since_start_of_benchmark();
 
    /**
-    * Return the TPS calculation of an ever-expanding window. This
-    * means that the average of all ticks are taken into account when
-    * measuring the TPS.
-    */
-   size_t expanding_window();
-
-   /**
     * Return the TPS calculation of a narrow window. This means that
     * the TPS will only be measured by a specified window (1 second
     * window, 5 second window, etc.).
     */
    size_t narrow_window();
-
-   /**
-    *  Return the calculation of a rolling window. This means that the
-    *  TPS calculation will be that of a rolling average/moving
-    *  average.
-    */
-   size_t rolling_window(size_t term);
    
 private:
    /**

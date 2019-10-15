@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
          "          -v|--max-value-length 1023 \\\n" \
          "          -e|--max-value-value 255\n"};
       
-      database_benchmark<chainrocks_interface> dt{window::narrow_window};
+      database_benchmark<chainbase_interface> dt{window::narrow_window};
       dt.set_program_options(cli);
          
       boost::program_options::variables_map vmap;

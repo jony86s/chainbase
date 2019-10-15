@@ -62,11 +62,19 @@ void generated_data::_generate_values() {
    clockerman->reset_clocker();
 
    std::cout << "Generating values...\n" << std::flush;
-   loggerman->print_progress(1,0);      
+   loggerman->print_progress(1,0);
 
    for (size_t i{}; i < _num_of_accounts; ++i) {
-      _accounts.push_back(arbitrary_datum(_uid(_dre)%(_max_key_length  +1), _uid(_dre)%(_max_key_value  +1)));
-      _values.push_back  (arbitrary_datum(_uid(_dre)%(_max_value_length+1), _uid(_dre)%(_max_value_value+1)));
+       arbitrary_datum account(_max_key_length,   _uid(_dre)%(_max_key_value  +1));
+       arbitrary_datum value  (_max_value_length, _uid(_dre)%(_max_value_value+1));
+
+       for (size_t i{}; i < 8; ++i) {
+           account[i] = _uid(_dre)%(_max_key_value  +1);
+           value[i]   = _uid(_dre)%(_max_value_value+1);
+       }
+       
+      _accounts.push_back(account);
+      _values.push_back  (value);
 
       if (UNLIKELY(clockerman->should_log())) {
          loggerman->print_progress(i, _num_of_accounts);

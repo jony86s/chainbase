@@ -16,7 +16,7 @@ IF( WIN32 )
   set(BOOST_ALL_DYN_LINK OFF) # force dynamic linking for all libraries
 ENDIF(WIN32)
 
-FIND_PACKAGE(Boost 1.70 REQUIRED COMPONENTS filesystem program_options unit_test_framework)
+FIND_PACKAGE(Boost 1.67 REQUIRED COMPONENTS filesystem program_options unit_test_framework)
 
 SET(PLATFORM_LIBRARIES)
 FIND_LIBRARY(ROCKSDB_LIBRARY rocksdb HINTS /usr/local/lib/)
@@ -74,6 +74,7 @@ target_link_libraries( chainrocks Boost::filesystem ${ROCKSDB_LIBRARY} ${PLATFOR
 target_include_directories( chainrocks PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/aux/plot.gp" "${CMAKE_CURRENT_BINARY_DIR}/bench/plot.gp" COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/aux/start-benchmark.sh" "${CMAKE_CURRENT_BINARY_DIR}/bench/start-benchmark.sh" COPYONLY)
 
 if(WIN32)
    target_link_libraries( chainbase ws2_32 mswsock )

@@ -39,19 +39,8 @@ size_t clocker::seconds_since_start_of_benchmark() {
    return ((_new_time - _original_time)/1000);
 }
 
-size_t clocker::expanding_window() {
-   return  seconds_since_start_of_benchmark();
-}
-
 size_t clocker::narrow_window() {
    return ((_new_time - _old_time)/1000);
-}
-
-// Currently only a 5 second rolling window is provided.
-// This will change in the future.
-size_t clocker::rolling_window(size_t term) {
-   _rolling_average->push_term(term);
-   return _rolling_average->get_rolling_average();
 }
 
 long long clocker::_retrieve_time() {
