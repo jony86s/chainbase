@@ -13,7 +13,14 @@ Chainbase
   It was starting to become unbearably slow.
 * Note: The 830,000 accounts 10,000 swaps results in chainbase-data.csv is:
   44, 128, 66, 70.5512, 4101.04
+* Note: the drop-off in TPS before physical memory is exhausted.
 
 Chainrocks
 ==========
-# * Note: For chainrocks I am moving the completely. // ??? This still true?
+- Performed test only using 100,000 swaps and performing a batch write every 10,000 swaps
+  This is due to an assertion error I kept getting when performing more bath swaps than what I have memory for?
+  And why is it that after I perform the batch write, that that memory isn't freed??
+* Note: I used a key size of 8 bytes and value of up to 1024 bytes for chainrocks
+  as opposed to the 1024 key size and 1024 value size for chainbase
+- At test ./bench-tps -n340000 -w100000 I got an assertion from rocksdb that kept the test from going forward
+  My assumption is that when the batch writing _mechanism_ goes out of physical memory, rocksdb throws
