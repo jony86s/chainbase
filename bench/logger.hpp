@@ -40,36 +40,46 @@ public:
     */
    void flush_all();
 
+    /**
+    * Save a CPU load measurement to the CPU load vector.
+    */
+   void log_cpu_load(const size_t& n);
+
+    /**
+    * Save a RAM usage measurement to the RAM usage vector.
+    */
+   void log_ram_usage(const size_t& n);
+
+    /**
+     * Save a vm_usage measurement to the vm_usage vector.
+     */
+    void log_total_vm_usage(const size_t& n);
+
    /**
     * Save a TPS measurement to the TPS vector.
     */
-   void log_tps(const std::pair<size_t,size_t>& p);
-
-   /**
-    * Save a RAM usage measurement to the RAM usage vector.
-    */
-   void log_ram_usage(const std::pair<size_t,double>& p);
-
-   /**
-    * Save a CPU load measurement to the CPU load vector.
-    */
-   void log_cpu_load(const std::pair<size_t,double>& p);
-
+   void log_tps(const size_t& n);
+    
 private:
-   /**
-    * Holds the TPS measurements.
-    */
-   std::vector<std::pair<size_t,size_t>> _tps;
-
-   /**
-    * Holds the RAM usage measurements.
-    */
-   std::vector<std::pair<size_t,double>> _ram_usage;
-
    /**
     * Holds the CPU load measurements.
     */
-   std::vector<std::pair<size_t,double>> _cpu_load;
+   std::vector<size_t> _cpu_load;
+
+    /**
+    * Holds the RAM usage measurements.
+    */
+   std::vector<size_t> _ram_usage;
+
+    /**
+    * Holds the Swap Usage measurements.
+    */
+   std::vector<size_t> _total_vm_usage;
+    
+   /**
+    * Holds the TPS measurements.
+    */
+   std::vector<size_t> _tps;
 
    /**
     * File in which to log all metrics.

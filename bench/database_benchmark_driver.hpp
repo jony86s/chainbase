@@ -80,75 +80,60 @@ void database_benchmark<Database>::_initial_database_state() {
    std::cout << "Filling initial database state...\n" << std::flush;
    loggerman->print_progress(1,0);
       
-   for (size_t i{}; i < _gen_data.num_of_accounts()/10; ++i) {
+   for (size_t i{}; i < _gen_data.num_of_accounts(); ++i) {
+       _database.put(_gen_data.accounts()[i], _gen_data.values()[i]);
+       
       if (UNLIKELY(clockerman->should_log())) {
-         loggerman->log_tps      ({clockerman->seconds_since_start_of_benchmark(), 0});
-         loggerman->log_ram_usage({clockerman->seconds_since_start_of_benchmark(), _system_metrics.total_ram_currently_used()});
-         loggerman->log_cpu_load ({clockerman->seconds_since_start_of_benchmark(), _system_metrics.calculate_cpu_load()});
-         loggerman->print_progress(i, _gen_data.num_of_accounts()/10);
+         loggerman->print_progress(i, _gen_data.num_of_accounts());
          clockerman->update_clocker();
       }
-
-      _database.start_undo_session(true);
-
-      auto session{_database.start_undo_session(true)};
-      _database.start_undo_session(true);
-      // Create 10 new accounts per undo session.
-      // AKA; create 10 new accounts per block.
-      for (size_t j{}; j < 10; ++j) {
-         _database.put(_gen_data.accounts()[i*10+j], _gen_data.values()[i*10+j]);
-      }
-      session.push();
    }
 
-   loggerman->print_progress(1,1);
-   _database.start_undo_session(true).push();
    _database.write();
+   loggerman->print_progress(1,1);
    std::cout << "done.\n" << std::flush;
 }
 
 template<typename Database>
 void database_benchmark<Database>::_execution_loop() {
+    clockerman->reset_clocker();
    size_t transactions_per_second{};
 
    std::cout << "Benchmarking...\n" << std::flush;
    loggerman->print_progress(1,0);
       
    for (size_t i{}; i < _gen_data.num_of_swaps(); ++i) {
+       _database.swap(_gen_data, i);
+       
       if (UNLIKELY(clockerman->should_log())) {
          switch (_window) {
              case window::expanding_window:
-                loggerman->log_tps({clockerman->seconds_since_start_of_benchmark(), _expanding_window_metric(transactions_per_second)});
+                loggerman->log_tps(_expanding_window_metric(transactions_per_second));
+                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
                 clockerman->update_clocker();
                 break;
              case window::narrow_window:
-                loggerman->log_tps({clockerman->seconds_since_start_of_benchmark(), _narrow_window_metric(transactions_per_second)});
+                loggerman->log_tps(_narrow_window_metric(transactions_per_second));
+                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
                 clockerman->update_clocker();
                 transactions_per_second = 0;
                 break;
              case window::rolling_window:
-                loggerman->log_tps({clockerman->seconds_since_start_of_benchmark(), _rolling_window_metric(transactions_per_second)});
-                clockerman->update_clocker();
+                loggerman->log_tps(_rolling_window_metric(transactions_per_second));
+                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
                 transactions_per_second = 0;
+                clockerman->update_clocker();
                 break;
              default:
                 throw std::runtime_error{"database_benchmark::should_log()"};
                 break;
          }
-            
-         loggerman->log_ram_usage({clockerman->seconds_since_start_of_benchmark(), _system_metrics.total_ram_currently_used()});
-         loggerman->log_cpu_load ({clockerman->seconds_since_start_of_benchmark(), _system_metrics.calculate_cpu_load()});
-         loggerman->print_progress(i, _gen_data.num_of_swaps());
       }
-
-      auto session{_database.start_undo_session(true)};
-      _database.swap(_gen_data, i);
-      session.squash();
+      
       transactions_per_second += 2;
    }
 
    loggerman->print_progress(1,1);
-   _database.write();
    std::cout << "done.\n" << std::flush;
 }
 

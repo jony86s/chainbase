@@ -39,6 +39,11 @@ public:
     */
    void total_vm_used_by_proc();
 
+    /**
+     * Print the total virtual memory currently used on the machine.
+    */
+    size_t total_vm_usage();
+
    /**
     * Return the total RAM on a machine.
     */
