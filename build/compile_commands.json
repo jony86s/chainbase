@@ -1,0 +1,57 @@
+[
+{
+  "directory": "/Users/john.debord/bench-tps/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/chainbase.dir/src/chainbase.cpp.o -c /Users/john.debord/bench-tps/src/chainbase.cpp",
+  "file": "/Users/john.debord/bench-tps/src/chainbase.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/chainbase.dir/src/pinnable_mapped_file.cpp.o -c /Users/john.debord/bench-tps/src/pinnable_mapped_file.cpp",
+  "file": "/Users/john.debord/bench-tps/src/pinnable_mapped_file.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/chainrocks.dir/src/chainrocks.cpp.o -c /Users/john.debord/bench-tps/src/chainrocks.cpp",
+  "file": "/Users/john.debord/bench-tps/src/chainrocks.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/bench_tps.cpp.o -c /Users/john.debord/bench-tps/bench/bench_tps.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/bench_tps.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/clocker.cpp.o -c /Users/john.debord/bench-tps/bench/clocker.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/clocker.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/chainbase_interface.cpp.o -c /Users/john.debord/bench-tps/bench/chainbase_interface.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/chainbase_interface.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/chainrocks_interface.cpp.o -c /Users/john.debord/bench-tps/bench/chainrocks_interface.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/chainrocks_interface.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/generated_data.cpp.o -c /Users/john.debord/bench-tps/bench/generated_data.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/generated_data.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/logger.cpp.o -c /Users/john.debord/bench-tps/bench/logger.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/logger.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/bench",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/bench-tps.dir/system_metrics.cpp.o -c /Users/john.debord/bench-tps/bench/system_metrics.cpp",
+  "file": "/Users/john.debord/bench-tps/bench/system_metrics.cpp"
+},
+{
+  "directory": "/Users/john.debord/bench-tps/build/test",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -DBOOST_ALL_NO_LIB -I/Users/john.debord/bench-tps/include -isystem /usr/local/include   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk   -std=gnu++1z -o CMakeFiles/chainbase_test.dir/test.cpp.o -c /Users/john.debord/bench-tps/test/test.cpp",
+  "file": "/Users/john.debord/bench-tps/test/test.cpp"
+}
+]

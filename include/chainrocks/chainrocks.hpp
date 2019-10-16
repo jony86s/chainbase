@@ -65,10 +65,11 @@ namespace chainrocks {
       
       void _init_general_options() {
          _general_options.create_if_missing = true;
-         _general_options.paranoid_checks = false;
+         // _general_options.paranoid_checks = false;
          _general_options.IncreaseParallelism();
          _general_options.OptimizeLevelStyleCompaction();
-         _general_options.write_buffer_size = 1ULL*64ULL*1024ULL*1024ULL*1024ULL;
+         // _general_options.write_buffer_size = 1ULL*64ULL*1024ULL*1024ULL*1024ULL;
+         // _general_options.write_buffer_size = 1024ULL*1024ULL*1024ULL;
       }
 
       void _init_flush_options()

@@ -23,22 +23,22 @@
  */
 class logger {
 public:
-   /**
-    * Constructor; normal operation.
-    */
-   logger();
+    /**
+     * Constructor; normal operation.
+     */
+    logger();
 
-   /**
-    * Log the progress of a construct to the console. With `n' being
-    * the numerator and `m' being the denominator multiplied by a
-    * factor of 100.
-    */
-   void print_progress(size_t n, size_t m);
+    /**
+     * Log the progress of a construct to the console. With `n' being
+     * the numerator and `m' being the denominator multiplied by a
+     * factor of 100.
+     */
+    void print_progress(size_t n, size_t m);
 
-   /**
-    * Flush all saved metrics to the specified file.
-    */
-   void flush_all();
+    /**
+     * Flush all saved metrics to the specified file.
+     */
+    void flush_all();
 
     /**
     * Save a CPU load measurement to the CPU load vector.
@@ -49,6 +49,11 @@ public:
     * Save a RAM usage measurement to the RAM usage vector.
     */
    void log_ram_usage(const size_t& n);
+
+    /**
+     * Save a TPS measurement to the TPS vector.
+     */
+    void log_tps(const size_t& n);
 
     /**
      * Save a vm_usage measurement to the vm_usage vector.
@@ -80,9 +85,20 @@ private:
     * Holds the TPS measurements.
     */
    std::vector<size_t> _tps;
+private:
 
-   /**
-    * File in which to log all metrics.
-    */
-   std::ofstream _data_file;
+    /**
+     * Holds the TPS measurements.
+     */
+    std::vector<size_t> _tps;
+
+    /**
+     * Holds the Swap Usage measurements.
+     */
+    std::vector<size_t> _total_vm_usage;
+    
+    /**
+     * File in which to log all metrics.
+     */
+    std::ofstream _data_file;
 };

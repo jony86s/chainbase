@@ -62,7 +62,7 @@ void generated_data::_generate_values() {
    clockerman->reset_clocker();
 
    std::cout << "Generating values...\n" << std::flush;
-   loggerman->print_progress(1,0);      
+   loggerman->print_progress(1,0);
 
    for (size_t i{}; i < _num_of_accounts; ++i) {
        arbitrary_datum account(_max_key_length,   _uid(_dre)%(_max_key_value  +1));

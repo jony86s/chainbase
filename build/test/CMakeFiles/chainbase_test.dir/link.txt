@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++   -Wall -Wno-conversion -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/chainbase_test.dir/test.cpp.o  -o chainbase_test ../libchainbase.a /usr/local/lib/libboost_unit_test_framework.a /usr/local/lib/libboost_filesystem.a 

@@ -16,7 +16,7 @@ IF( WIN32 )
   set(BOOST_ALL_DYN_LINK OFF) # force dynamic linking for all libraries
 ENDIF(WIN32)
 
-FIND_PACKAGE(Boost 1.70 REQUIRED COMPONENTS filesystem program_options unit_test_framework)
+FIND_PACKAGE(Boost 1.67 REQUIRED COMPONENTS filesystem program_options unit_test_framework)
 
 SET(PLATFORM_LIBRARIES)
 FIND_LIBRARY(ROCKSDB_LIBRARY rocksdb HINTS /usr/local/lib/)
@@ -87,4 +87,3 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/chainbase DESTINATION ${CM
 install(TARGETS chainbase
    LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR} 
 ARCHIVE DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
-
