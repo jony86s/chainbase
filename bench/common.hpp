@@ -31,7 +31,9 @@ using arbitrary_datum = std::vector<uint8_t>;
  * measure the results of the benchmark.
  */
 enum class window : size_t {
-   narrow_window    = 1
+   expanding_window = 0,
+   narrow_window    = 1,
+   rolling_window   = 2
 };
 
 /**

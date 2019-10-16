@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libchainrocks.a  CMakeFiles/chainrocks.dir/src/chainrocks.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libchainrocks.a

@@ -31,124 +31,136 @@
 template<typename Database>
 class database_benchmark {
 public:
-   /**
-    * Constructor; construct an instance of a `database_benchmark';
-    * with `window' being the time window in which to gather the
-    * results of the benchmark.
-    */
-   database_benchmark(window window);
+    /**
+     * Constructor; construct an instance of a `database_benchmark';
+     * with `window' being the time window in which to gather the
+     * results of the benchmark.
+     */
+    database_benchmark(window window);
 
-   /**
-    * Destructor; normal operation.
-    */
-   ~database_benchmark();
+    /**
+     * Destructor; normal operation.
+     */
+    ~database_benchmark();
 
-   /**
-    * Set the program options for which the user can specify a
-    * customizable option.
-    */
-   void set_program_options(boost::program_options::options_description& cli);
+    /**
+     * Set the program options for which the user can specify a
+     * customizable option.
+     */
+    void set_program_options(boost::program_options::options_description& cli);
 
-   /**
-    * Execute the benchmark, given the criteria provided by the user.
-    */
-   void execute_benchmark();
+    /**
+     * Execute the benchmark, given the criteria provided by the user.
+     */
+    void execute_benchmark();
 
 private:
-   /**
-    * Holds the temporary directory in which the benchmark will store
-    * its underlying database.
-    */
-   const boost::filesystem::path _database_dir{boost::filesystem::unique_path()};
+    /**
+     * Holds the temporary directory in which the benchmark will store
+     * its underlying database.
+     */
+    const boost::filesystem::path _database_dir{boost::filesystem::unique_path()};
 
-   /**
-    * Holds the underlying database interface that has been correctly
-    * implemented to able to integrate with this benchmark.
-    */
-   Database _database{_database_dir};
+    /**
+     * Holds the underlying database interface that has been correctly
+     * implemented to able to integrate with this benchmark.
+     */
+    Database _database{_database_dir};
 
-   /**
-    * Holds the randomly generated data.
-    */
-   generated_data _gen_data;
+    /**
+     * Holds the randomly generated data.
+     */
+    generated_data _gen_data;
 
-   /**
-    * Holds the data strucutre that can act upon the system; gathering
-    * system metrics if need be.
-    */
-   system_metrics _system_metrics;
+    /**
+     * Holds the data strucutre that can act upon the system; gathering
+     * system metrics if need be.
+     */
+    system_metrics _system_metrics;
 
-   /**
-    * Holds the time window which the user has specified to user.
-    */
-   window _window;
+    /**
+     * Holds the time window which the user has specified to user.
+     */
+    window _window;
 
-   /**
-    * Holds the starting seed which seeds the random number generator.
-    */
-   unsigned int _seed;
+    /**
+     * Holds the starting seed which seeds the random number generator.
+     */
+    unsigned int _seed;
 
-   /**
-    * Holds the lower bound of random numbers that the random number
-    * generator is allowed to generate.
-    */
-   size_t _lower_bound_inclusive;
+    /**
+     * Holds the lower bound of random numbers that the random number
+     * generator is allowed to generate.
+     */
+    size_t _lower_bound_inclusive;
 
-   /**
-    * Holds the upper bound of random numbers that the random number
-    * generator is allowed to generate.
-    */
-   size_t _upper_bound_inclusive;
+    /**
+     * Holds the upper bound of random numbers that the random number
+     * generator is allowed to generate.
+     */
+    size_t _upper_bound_inclusive;
 
-   /**
-    * Holds the number of accounts that the random number generator
-    * shall generate.
-    */
-   size_t _num_of_accounts;
+    /**
+     * Holds the number of accounts that the random number generator
+     * shall generate.
+     */
+    size_t _num_of_accounts;
 
-   /**
-    * Holds the number of swaps that the random number generator shall
-    * generate.
-    */
-   size_t _num_of_swaps;
+    /**
+     * Holds the number of swaps that the random number generator shall
+     * generate.
+     */
+    size_t _num_of_swaps;
 
-   /**
-    * Holds the maximum key length (in bytes) that the random number
-    * generator is allowed to generate.
-    */
-   size_t _max_key_length;
+    /**
+     * Holds the maximum key length (in bytes) that the random number
+     * generator is allowed to generate.
+     */
+    size_t _max_key_length;
 
-   /**
-    * Holds the maximum key value that the random number generator is
-    * allowed to generate.
-    */
-   size_t _max_key_value;
+    /**
+     * Holds the maximum key value that the random number generator is
+     * allowed to generate.
+     */
+    size_t _max_key_value;
 
-   /**
-    * Holds the maximum value length (in bytes) that the random number
-    * generator is allowed to generate.
-    */
-   size_t _max_value_length;
+    /**
+     * Holds the maximum value length (in bytes) that the random number
+     * generator is allowed to generate.
+     */
+    size_t _max_value_length;
 
-   /**
-    * Holds the maximum value value that the random number generator
-    * is allowed to generate.
-    */
-   size_t _max_value_value;
+    /**
+     * Holds the maximum value value that the random number generator
+     * is allowed to generate.
+     */
+    size_t _max_value_value;
 
-   /**
-    * Helper function to aid in the construction of a benchmark instance.
-    */
-   void _initial_database_state();
+    /**
+     * Helper function to aid in the construction of a benchmark instance.
+     */
+    void _initial_database_state();
 
-   /**
-    * Helper function to aid in the execution of the benchmark.
-    */
-   void _execution_loop() __attribute__((optimize(0)));
+    /**
+     * Helper function to aid in the execution of the benchmark.
+     */
+    void _execution_loop();
 
-   /**
-    * Helper function to aid in calculating the narrow window
+    /**
+    * Helper function to aid in calculating the expanding window
     * benchmark measurement.
     */
-   size_t _narrow_window_metric(size_t tps);
+    size_t _expanding_window_metric(size_t tps);
+
+    /**
+     * Helper function to aid in calculating the narrow window
+     * benchmark measurement.
+     */
+    size_t _narrow_window_metric(size_t tps);
+
+    /**
+    * Helper function to aid in calculating the rolling window
+    * benchmark measurement.
+    */
+    size_t _rolling_window_metric(size_t tps);
 };

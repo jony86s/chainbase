@@ -16,18 +16,18 @@ logger::logger()
 }
 
 void logger::print_progress(size_t n, size_t m) {
-   if (m == 0) {
-      std::cout << '[' << std::setw(3) << 0 << "%]\n";
-      return;
-   }
-   std::cout << '[' << std::setw(3) << (static_cast<size_t>((static_cast<double>(n)/m)*100.0)) << "%]\n";
+    if (m == 0) {
+        std::cout << '[' << std::setw(3) << 0 << "%]\n";
+        return;
+    }
+    std::cout << '[' << std::setw(3) << (static_cast<size_t>((static_cast<double>(n)/m)*100.0)) << "%]\n";
 }
 
 void logger::flush_all() {
-   for (size_t i{}; i < _tps.size(); ++i) {
-      _data_file << std::setw(10) << _tps[i]            << '\t';
-      _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
-   }
+    for (size_t i{}; i < _tps.size(); ++i) {
+        _data_file << std::setw(10) << _tps[i]            << '\t';
+        _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
+    }
 }
 
 void logger::log_cpu_load(const size_t& n) {

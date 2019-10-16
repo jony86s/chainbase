@@ -58,88 +58,88 @@ void database_benchmark<Database>::set_program_options(boost::program_options::o
 
 template<typename Database>
 void database_benchmark<Database>::execute_benchmark() {
-   _gen_data.init(_seed,
-                  _lower_bound_inclusive,
-                  _upper_bound_inclusive,
-                  _num_of_accounts,
-                  _num_of_swaps,
-                  _max_key_length,
-                  _max_key_value,
-                  _max_value_length,
-                  _max_value_value);
+    _gen_data.init(_seed,
+                   _lower_bound_inclusive,
+                   _upper_bound_inclusive,
+                   _num_of_accounts,
+                   _num_of_swaps,
+                   _max_key_length,
+                   _max_key_value,
+                   _max_value_length,
+                   _max_value_value);
       
-   _initial_database_state();
-   _execution_loop();
-   loggerman->flush_all();
+    _initial_database_state();
+    _execution_loop();
+    loggerman->flush_all();
 }
 
 template<typename Database>
 void database_benchmark<Database>::_initial_database_state() {
-   clockerman->reset_clocker();
+    clockerman->reset_clocker();
 
-   std::cout << "Filling initial database state...\n" << std::flush;
-   loggerman->print_progress(1,0);
+    std::cout << "Filling initial database state...\n" << std::flush;
+    loggerman->print_progress(1,0);
       
-   for (size_t i{}; i < _gen_data.num_of_accounts(); ++i) {
-       _database.put(_gen_data.accounts()[i], _gen_data.values()[i]);
+    for (size_t i{}; i < _gen_data.num_of_accounts(); ++i) {
+        _database.put(_gen_data.accounts()[i], _gen_data.values()[i]);
        
-      if (UNLIKELY(clockerman->should_log())) {
-         loggerman->print_progress(i, _gen_data.num_of_accounts());
-         clockerman->update_clocker();
-      }
-   }
+        if (UNLIKELY(clockerman->should_log())) {
+            loggerman->print_progress(i, _gen_data.num_of_accounts());
+            clockerman->update_clocker();
+        }
+    }
 
-   _database.write();
-   loggerman->print_progress(1,1);
-   std::cout << "done.\n" << std::flush;
+    _database.write();
+    loggerman->print_progress(1,1);
+    std::cout << "done.\n" << std::flush;
 }
 
 template<typename Database>
 void database_benchmark<Database>::_execution_loop() {
     clockerman->reset_clocker();
-   size_t transactions_per_second{};
+    size_t transactions_per_second{};
 
-   std::cout << "Benchmarking...\n" << std::flush;
-   loggerman->print_progress(1,0);
+    std::cout << "Benchmarking...\n" << std::flush;
+    loggerman->print_progress(1,0);
       
-   for (size_t i{}; i < _gen_data.num_of_swaps(); ++i) {
-       _database.swap(_gen_data, i);
+    for (size_t i{}; i < _gen_data.num_of_swaps(); ++i) {
+        _database.swap(_gen_data, i);
        
-      if (UNLIKELY(clockerman->should_log())) {
-         switch (_window) {
-             case window::expanding_window:
-                loggerman->log_tps(_expanding_window_metric(transactions_per_second));
-                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
-                clockerman->update_clocker();
-                break;
-             case window::narrow_window:
-                loggerman->log_tps(_narrow_window_metric(transactions_per_second));
-                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
-                clockerman->update_clocker();
-                transactions_per_second = 0;
-                break;
-             case window::rolling_window:
-                loggerman->log_tps(_rolling_window_metric(transactions_per_second));
-                loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
-                transactions_per_second = 0;
-                clockerman->update_clocker();
-                break;
-             default:
-                throw std::runtime_error{"database_benchmark::should_log()"};
-                break;
-         }
-      }
+        if (UNLIKELY(clockerman->should_log())) {
+            switch (_window) {
+                case window::expanding_window:
+                    loggerman->log_tps(_expanding_window_metric(transactions_per_second));
+                    loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
+                    clockerman->update_clocker();
+                    break;
+                case window::narrow_window:
+                    loggerman->log_tps(_narrow_window_metric(transactions_per_second));
+                    loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
+                    clockerman->update_clocker();
+                    transactions_per_second = 0;
+                    break;
+                case window::rolling_window:
+                    loggerman->log_tps(_rolling_window_metric(transactions_per_second));
+                    loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());
+                    transactions_per_second = 0;
+                    clockerman->update_clocker();
+                    break;
+                default:
+                    throw std::runtime_error{"database_benchmark::should_log()"};
+                    break;
+            }
+        }
       
-      transactions_per_second += 2;
-   }
+        transactions_per_second += 2;
+    }
 
-   loggerman->print_progress(1,1);
-   std::cout << "done.\n" << std::flush;
+    loggerman->print_progress(1,1);
+    std::cout << "done.\n" << std::flush;
 }
 
 template<typename Database>
 size_t database_benchmark<Database>::_expanding_window_metric(size_t tps) {
-   return tps/clockerman->expanding_window();
+    return tps/clockerman->expanding_window();
 }
 
 template<typename Database>
@@ -149,5 +149,5 @@ size_t database_benchmark<Database>::_narrow_window_metric(size_t tps) {
 
 template<typename Database>
 size_t database_benchmark<Database>::_rolling_window_metric(size_t tps) {
-   return clockerman->rolling_window(tps/clockerman->narrow_window());
+    return clockerman->rolling_window(tps/clockerman->narrow_window());
 }
