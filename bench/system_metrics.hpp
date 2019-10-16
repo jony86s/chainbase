@@ -30,11 +30,6 @@ public:
     void total_vm();
 
     /**
-     * Print the total virtual memory currently used on the machine.
-     */
-    void total_vm_currently_used();
-
-    /**
      * Print the total virtual memory currently used by a process.
      */
     void total_vm_used_by_proc();
@@ -42,12 +37,12 @@ public:
     /**
      * Print the total virtual memory currently used on the machine.
      */
-    size_t total_vm_usage();
+    uint64_t total_vm_usage();
 
     /**
      * Return the total RAM on the machine.
      */
-    size_t total_ram();
+    uint64_t total_ram();
 
     /**
      * Return the RAM currently used by the machine as a coefficient
@@ -55,32 +50,14 @@ public:
      */
     double total_ram_currently_used();
 
-    /**
-     * Helper function used to help calculate the total CPU load.
-     * TODO: Remove this from the interface.
-     */
-    double calculate_cpu_load();
-
-    /**
-     * Helper function used to help calculate the total CPU load.
-     * TODO: Remove this from the interface.
-     */
-    double get_cpu_load();
-
-    /**
-     * Return the CPU load currently used by the machine as a
-     * coefficient < 1.
-     */
-    double calculate_cpu_load(size_t idle_ticks, size_t total_ticks);
-
 private:
     /**
      * Holds the previous CPU ticks by the machine.
      */
-    size_t _prev_total_ticks;
+    uint64_t _prev_total_ticks;
 
     /**
      * Holds the previous idle CPU ticks by the machine.
      */
-    size_t _prev_idle_ticks;
+    uint64_t _prev_idle_ticks;
 };

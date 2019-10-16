@@ -15,38 +15,38 @@ logger::logger()
     _total_vm_usage.reserve(10000);
 }
 
-void logger::print_progress(size_t n, size_t m) {
+void logger::print_progress(uint64_t n, uint64_t m) {
     if (m == 0) {
         std::cout << '[' << std::setw(3) << 0 << "%]\n";
         return;
     }
-    std::cout << '[' << std::setw(3) << (static_cast<size_t>((static_cast<double>(n)/m)*100.0)) << "%]\n";
+    std::cout << '[' << std::setw(3) << (static_cast<uint64_t>((static_cast<double>(n)/m)*100.0)) << "%]\n";
 }
 
 void logger::flush_all() {
-    for (size_t i{}; i < _tps.size(); ++i) {
+    for (uint64_t i{}; i < _tps.size(); ++i) {
         _data_file << std::setw(10) << _tps[i]            << '\t';
         _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
     }
 }
 
-void logger::log_cpu_load(const size_t& n) {
+void logger::log_cpu_load(const uint64_t& n) {
     _cpu_load.push_back(n);
 }
 
-void logger::log_ram_usage(const size_t& n) {
+void logger::log_ram_usage(const uint64_t& n) {
     _ram_usage.push_back(n);
-    for (size_t i{}; i < _tps.size(); ++i) {
+    for (uint64_t i{}; i < _tps.size(); ++i) {
         _data_file << std::setw(10) << _tps[i]            << '\t';
         _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
         _data_file << std::flush;
     }
 }
 
-void logger::log_total_vm_usage(const size_t& n) {
+void logger::log_total_vm_usage(const uint64_t& n) {
     _total_vm_usage.push_back(n);
 }
 
-void logger::log_tps(const size_t& n) {
+void logger::log_tps(const uint64_t& n) {
     _tps.push_back(n);
 }

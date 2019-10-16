@@ -27,7 +27,7 @@ public:
      * benchmark shall be clocked. TODO: Let the user specify
      * milliseconds and/or possibly microseconds.
      */
-    clocker(size_t interval_in_seconds);
+    clocker(uint64_t interval_in_seconds);
 
     /**
      * Reset the state of this data structure to that akin of it's
@@ -54,28 +54,28 @@ public:
      * Returns how many seconds have passed snce the last was last
      * instantiated or reset.
      */
-    size_t seconds_since_start_of_benchmark();
+    uint64_t seconds_since_start_of_benchmark();
     
     /**
      * Return the TPS calculation of an ever-expanding window. This
      * means that the average of all ticks are taken into account when
      * measuring the TPS.
      */
-    size_t expanding_window();
+    uint64_t expanding_window();
 
     /**
      * Return the TPS calculation of a narrow window. This means that
      * the TPS will only be measured by a specified window (1 second
      * window, 5 second window, etc.).
      */
-    size_t narrow_window();
+    uint64_t narrow_window();
 
     /**
      *  Return the calculation of a rolling window. This means that the
      *  TPS calculation will be that of a rolling average/moving
      *  average.
      */
-    size_t rolling_window(size_t term);
+    uint64_t rolling_window(uint64_t term);
    
 private:
     /**
@@ -87,23 +87,23 @@ private:
     /**
      * Holds the user-specified interval to measure the benchmark.
      */
-    size_t _interval_in_seconds;
+    uint64_t _interval_in_seconds;
 
     /**
      * Holds the time upon the instantiation of this class or if it has
      * been reset.
      */
-    size_t _original_time;
+    uint64_t _original_time;
 
     /**
      * Holds the time needed for doing various calculations.
      */
-    size_t _old_time;
+    uint64_t _old_time;
 
     /**
      * Holds the time needed for doing various calculations.
      */
-    size_t _new_time;
+    uint64_t _new_time;
 
     /**
      * Holds the logic of measuring TPS over a rolling window.
@@ -113,17 +113,17 @@ private:
          * Specified number of terms in which to perform the rolling
          * average calculation. TODO: Will be `_last_n_terms'.
          */
-        std::deque<size_t> _last_five_terms{0,0,0,0,0};
+        std::deque<uint64_t> _last_five_terms{0,0,0,0,0};
 
         /**
          * Push the given term to the vector.
          */
-        void push_term(size_t term);
+        void push_term(uint64_t term);
 
         /**
          * Return the rolling average calculation.
          */
-        size_t get_rolling_average();
+        uint64_t get_rolling_average();
     };
 
     /**

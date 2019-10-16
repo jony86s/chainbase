@@ -26,47 +26,28 @@
 class generated_data {
 public:
     /**
-     * Constructor; normal operation.
-     */
-    generated_data();
-
-    /**
-     * Constructor; generates the randomly genereted data needed for
-     * the benchmark.
-     */
-    generated_data(unsigned int seed,
-                   size_t lower_bound_inclusive,
-                   size_t upper_bound_inclusive,
-                   size_t num_of_accounts,
-                   size_t num_of_swaps,
-                   size_t max_key_length,
-                   size_t max_key_value,
-                   size_t max_value_length,
-                   size_t max_value_value);
-
-    /**
      * Used to generate the randomly generated data for the benchmark
      * if it has not yet done so via the constructor.
      */
-    void init(unsigned int seed,
-              size_t lower_bound_inclusive,
-              size_t upper_bound_inclusive,
-              size_t num_of_accounts,
-              size_t num_of_swaps,
-              size_t max_key_length,
-              size_t max_key_value,
-              size_t max_value_length,
-              size_t max_value_value);
+    generated_data(unsigned int seed,
+                   uint64_t num_of_accounts,
+                   uint64_t num_of_swaps,
+                   uint64_t max_value_size);
 
     /**
      * Return the number of accounts in the accounts vector.
      */
-    const size_t num_of_accounts() const;
+    const uint64_t num_of_accounts() const;
    
     /**
      * Return the number of swaps in the swaps vector.
      */
-    const size_t num_of_swaps() const;
+    const uint64_t num_of_swaps() const;
+
+    /**
+     * Return the value for any one value of a key/value pair.
+     */
+    const uint64_t max_value_size() const;
 
     /**
      * Return a reference to the vector holding the randomly generated
@@ -84,66 +65,48 @@ public:
      * Return a reference to the vector holding the randomly generated
      * values (`arbitrary_datum').
      */
-    const std::vector<size_t>& swaps0() const;
+    const std::vector<uint64_t>& swaps0() const;
 
     /**
      * Return a reference to the vector holding the randomly generated
      * values (`arbitrary_datum').
      */
-    const std::vector<size_t>& swaps1() const;
+    const std::vector<uint64_t>& swaps1() const;
 
 private:
     /**
      * Holds the random number to generate the arbitrary data for the
      * benchmark.
      */
-    std::default_random_engine _dre;
+    std::default_random_engine _def_rand_engine;
 
     /**
      * Holds the distribution used for generating the random data.
      * TODO: Make this a customizable user option in the future. 
      */
-    std::uniform_int_distribution<size_t> _uid;
+    std::uniform_int_distribution<uint64_t> _uniform_int_dist;
 
     /**
      * Holds the number of accounts the benchmark will work with.
      */
-    size_t _num_of_accounts;
+    uint64_t _num_of_accounts;
 
     /**
      * Holds the number of swap operations the benchmark will work
      * with.
      */
-    size_t _num_of_swaps;
-
-    /**
-     * Holds the maximum key length (in bytes) that the benchmark will
-     * work with.
-     */
-    size_t _max_key_length;
-
-    /**
-     * Holds the maximum key value that the benchmark will work with in
-     * the range [0-`_max_key_value').
-     */
-    size_t _max_key_value;
+    uint64_t _num_of_swaps;
 
     /**
      * Holds the maximum value length (in bytes) that the benchmark
      * will work with.
      */
-    size_t _max_value_length;
-
-    /**
-     * Holds the maximum value value that the benchmark will work with
-     * in the range [0-`_max_value_value').
-     */
-    size_t _max_value_value;
+    uint64_t _max_value_size;
 
     /**
      * Holds the `arbitrary_data' relating to accounts.
      */
-    std::vector<arbitrary_datum> _accounts;
+    std::vector<uint64_t> _accounts;
 
     /**
      * Holds the `arbitrary_data' relating to values.
@@ -154,13 +117,15 @@ private:
      * Holds the indices deciding which first account to swap.
      * TODO: Combine the two swap vectors.
      */
-    std::vector<size_t> _swaps0;
+    std::vector<uint64_t> _swaps0;
 
     /**
      * Holds the indices deciding which second account to swap.
      * TODO: Combine the two swap vectors.
      */
-    std::vector<size_t> _swaps1;
+    std::vector<uint64_t> _swaps1;
+
+private:
 
     /**
      * Helper function for generating the random data.
@@ -170,5 +135,5 @@ private:
     /**
      * Helper function for generating the random data, individually.
      */
-    size_t _generate_value();
+    uint64_t _generate_value();
 };

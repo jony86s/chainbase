@@ -1,11 +1,13 @@
-add_executable(bench-tps
+add_executable(
+  bench-tps
   "bench_tps.cpp"
-  "clocker.cpp"
   "chainbase_interface.cpp"
   "chainrocks_interface.cpp"
+  "clocker.cpp"
   "generated_data.cpp"
   "logger.cpp"
   "system_metrics.cpp")
+  
 target_link_libraries(
   bench-tps
   chainbase

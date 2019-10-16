@@ -39,29 +39,20 @@ public:
      * memory table. `ctx' pointer has no use here; therefore it is not
      * used.
      */
-    virtual void put(arbitrary_datum key, arbitrary_datum value, void* ctx = nullptr) final;
+    virtual void put(uint64_t key, arbitrary_datum value, void* ctx = nullptr) final;
 
     /**
      * Modify the state of `chainbase' by perfoming a canonical
      * swap. It is essentially taking two indices in the underlying
      * memory table and performing a swap on the given accounts.
      */
-    virtual void swap(const generated_data& gen_data, size_t i) final;
+    virtual void swap(const uint64_t rand_account0, const uint64_t rand_account1) final;
 
     /**
      * Performs a `RocksDB' `put_batch', which write all of the
      * contents of its memory tables to a `.sst' (Solid State).
      */
     virtual void write() final;
-
-    /**
-     * Returns the underlying `session' object that `chainrocks'
-     * provides. TODO: Factor this out; the user should not be aware of
-     * this abstraction.
-     */
-    auto start_undo_session(bool enabled) {
-        return _db.start_undo_session(enabled);
-    }
    
 private:
     /**

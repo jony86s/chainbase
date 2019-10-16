@@ -7,56 +7,42 @@
 
 #include "generated_data.hpp"
 
-generated_data::generated_data() = default;
-   
 generated_data::generated_data(unsigned int seed,
-                               size_t lower_bound_inclusive,
-                               size_t upper_bound_inclusive,
-                               size_t num_of_accounts,
-                               size_t num_of_swaps,
-                               size_t max_key_length,
-                               size_t max_key_value,
-                               size_t max_value_length,
-                               size_t max_value_value)
-    : _dre{seed}
-    , _uid{lower_bound_inclusive, upper_bound_inclusive}
-    , _num_of_accounts{num_of_accounts}
-    , _num_of_swaps{num_of_swaps}
-    , _max_key_length{max_key_length}
-    , _max_key_value{max_key_value}
-    , _max_value_length{max_value_length}
-    , _max_value_value{max_value_value}
+                               uint64_t num_of_accounts,
+                               uint64_t num_of_swaps,
+                               uint64_t max_value_size)
 {
-    _generate_values();
-}
-
-void generated_data::init(unsigned int seed,
-                          size_t lower_bound_inclusive,
-                          size_t upper_bound_inclusive,
-                          size_t num_of_accounts,
-                          size_t num_of_swaps,
-                          size_t max_key_length,
-                          size_t max_key_value,
-                          size_t max_value_length,
-                          size_t max_value_value)
-{
-    _dre.seed(seed);
-    _uid = std::uniform_int_distribution<size_t>{lower_bound_inclusive, upper_bound_inclusive};
+    _def_rand_engine.seed(seed);
+    _uniform_int_dist = std::uniform_int_distribution<uint64_t>{0, std::numeric_limits<uint64_t>::max()};
     _num_of_accounts = num_of_accounts;
     _num_of_swaps = num_of_swaps;
-    _max_key_length = max_key_length;
-    _max_key_value = max_key_value;
-    _max_value_length = max_value_length;
-    _max_value_value = max_value_value;
+    _max_value_size = max_value_size;
     _generate_values();
 }
 
-const size_t generated_data::num_of_accounts() const { return _num_of_accounts; }
-const size_t generated_data::num_of_swaps() const { return _num_of_swaps; }
-const std::vector<arbitrary_datum>& generated_data::accounts() const { return _accounts; }
-const std::vector<arbitrary_datum>& generated_data::values() const { return _values; }
-const std::vector<size_t>& generated_data::swaps0() const { return _swaps0; }
-const std::vector<size_t>& generated_data::swaps1() const { return _swaps1; }
+const uint64_t generated_data::num_of_accounts() const {
+    return _num_of_accounts;
+}
+
+const uint64_t generated_data::num_of_swaps() const {
+    return _num_of_swaps;
+}
+
+const std::vector<arbitrary_datum>& generated_data::accounts() const {
+    return _accounts;
+}
+
+const std::vector<arbitrary_datum>& generated_data::values() const {
+    return _values;
+}
+
+const std::vector<uint64_t>& generated_data::swaps0() const {
+    return _swaps0;
+}
+
+const std::vector<uint64_t>& generated_data::swaps1() const {
+    return _swaps1;
+}
 
 void generated_data::_generate_values() {
     clockerman->reset_clocker();
@@ -64,13 +50,13 @@ void generated_data::_generate_values() {
     std::cout << "Generating values...\n" << std::flush;
     loggerman->print_progress(1,0);
 
-    for (size_t i{}; i < _num_of_accounts; ++i) {
-        arbitrary_datum account(_max_key_length,   _uid(_dre)%(_max_key_value  +1));
-        arbitrary_datum value  (_max_value_length, _uid(_dre)%(_max_value_value+1));
+    for (uint64_t i{}; i < _num_of_accounts; ++i) {
+        uint64_t        account{_uniform_int_dist(_def_rand_engine)};
+        arbitrary_datum value{_max_value_size, _uniform_int_dist(_def_rand_engine)%(_max_value_size)};
 
-        for (size_t i{}; i < 8; ++i) {
-            account[i] = _uid(_dre)%(_max_key_value  +1);
-            value[i]   = _uid(_dre)%(_max_value_value+1);
+        // For additional entropy.
+        for (uint64_t i{}; i < 8; ++i) {
+            value[i] = _uid(_dre)%(_max_value_value+1);
         }
        
         _accounts.push_back(account);
@@ -82,7 +68,7 @@ void generated_data::_generate_values() {
         }
     }
 
-    for (size_t i{}; i < _num_of_swaps; ++i) {
+    for (uint64_t i{}; i < _num_of_swaps; ++i) {
         _swaps0.push_back(_generate_value()%_num_of_accounts);
         _swaps1.push_back(_generate_value()%_num_of_accounts);
 
@@ -96,6 +82,6 @@ void generated_data::_generate_values() {
     std::cout << "done.\n" << std::flush;
 }
 
-size_t generated_data::_generate_value() {
+uint64_t generated_data::_generate_value() {
     return _uid(_dre);
 }

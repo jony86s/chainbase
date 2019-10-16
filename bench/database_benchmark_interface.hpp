@@ -55,17 +55,12 @@ public:
     void execute_benchmark();
 
 private:
-    /**
-     * Holds the temporary directory in which the benchmark will store
-     * its underlying database.
-     */
-    const boost::filesystem::path _database_dir{boost::filesystem::unique_path()};
 
     /**
      * Holds the underlying database interface that has been correctly
      * implemented to able to integrate with this benchmark.
      */
-    Database _database{_database_dir};
+    Database _database{boost::filesystem::unique_path()};
 
     /**
      * Holds the randomly generated data.
@@ -83,58 +78,7 @@ private:
      */
     window _window;
 
-    /**
-     * Holds the starting seed which seeds the random number generator.
-     */
-    unsigned int _seed;
-
-    /**
-     * Holds the lower bound of random numbers that the random number
-     * generator is allowed to generate.
-     */
-    size_t _lower_bound_inclusive;
-
-    /**
-     * Holds the upper bound of random numbers that the random number
-     * generator is allowed to generate.
-     */
-    size_t _upper_bound_inclusive;
-
-    /**
-     * Holds the number of accounts that the random number generator
-     * shall generate.
-     */
-    size_t _num_of_accounts;
-
-    /**
-     * Holds the number of swaps that the random number generator shall
-     * generate.
-     */
-    size_t _num_of_swaps;
-
-    /**
-     * Holds the maximum key length (in bytes) that the random number
-     * generator is allowed to generate.
-     */
-    size_t _max_key_length;
-
-    /**
-     * Holds the maximum key value that the random number generator is
-     * allowed to generate.
-     */
-    size_t _max_key_value;
-
-    /**
-     * Holds the maximum value length (in bytes) that the random number
-     * generator is allowed to generate.
-     */
-    size_t _max_value_length;
-
-    /**
-     * Holds the maximum value value that the random number generator
-     * is allowed to generate.
-     */
-    size_t _max_value_value;
+private:
 
     /**
      * Helper function to aid in the construction of a benchmark instance.
@@ -150,17 +94,17 @@ private:
     * Helper function to aid in calculating the expanding window
     * benchmark measurement.
     */
-    size_t _expanding_window_metric(size_t tps);
+    uint64_t _expanding_window_metric(uint64_t tps);
 
     /**
      * Helper function to aid in calculating the narrow window
      * benchmark measurement.
      */
-    size_t _narrow_window_metric(size_t tps);
+    uint64_t _narrow_window_metric(uint64_t tps);
 
     /**
     * Helper function to aid in calculating the rolling window
     * benchmark measurement.
     */
-    size_t _rolling_window_metric(size_t tps);
+    uint64_t _rolling_window_metric(uint64_t tps);
 };

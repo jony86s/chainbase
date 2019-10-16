@@ -9,7 +9,7 @@
 #include "generated_data.hpp" // generated_data
 
 /**
- * Implementation of database abstraction.
+ * Implementation of the database abstraction.
  *
  * This benchmark shall be database agnostic. Where a user-defined
  * interface need only to provide the operations specified here. In
@@ -30,28 +30,23 @@ public:
      * `ctx' pointer may be left null, as it is only here
      * premeditatively for future use.
      */
-    virtual inline void put(arbitrary_datum key, arbitrary_datum value, void* ctx = nullptr)=0;
+    virtual inline void put(uint64_t key, arbitrary_datum value, void* ctx = nullptr)=0;
 
     /**
      * Implementation of `swap' operation.
      *
      * Needed so that the benchmark may swap the arbitrary data in a random
      * fashion. For now, look at the example usage defined in the example
-     * backend database interfaces provided here in this
-     * repository. TODO: The parameters for this function are not
-     * intuitive and should be changed. `generated_data' should provide
-     * a function to extract the `arbitrary_data' value from the i'th
-     * index; this should not be left to the user to implement.
+     * backend database interfaces provided here in this repository.
      */
-    virtual inline void swap(const generated_data& gen_data, size_t i)=0;
+    virtual inline void swap(const uint64_t rand_account0, const uint64_t rand_account1)=0;
 
     /**
      * Implementation of `write' operation.
      *
      * Needed in case the underlying database backend utilizes a
      * batch-writing system when calling `put' operations. Otherwise
-     * this can just be a no-op if the underlying database backend
-     * writes directly to disk upon a `put' operation.
+     * this can just be a no-op.
      */
     virtual inline void write()=0;
 };

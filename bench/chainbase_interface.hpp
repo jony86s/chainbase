@@ -24,7 +24,7 @@ struct account : public chainbase::object<0,account> {
     template<typename Constructor, typename Allocator>
     account(Constructor&& c, Allocator&& a) { c(*this); }
     id_type id;
-    arbitrary_datum _account_key;
+    uint64_t _account_key;
     arbitrary_datum _account_value;
 };
 
@@ -72,22 +72,13 @@ public:
      * swap. It is essentially taking two indices in the underlying
      * `multi_index_table' and performing a swap on the given accounts.
      */
-    virtual void swap(const generated_data& gen_data, size_t i) final;
+    virtual void swap(const uint64_t rand_account0, const uint64_t rand_account1) final;
 
     /**
      * Performs a no-op, since `chainbase' does not provide a
      * batch-writing facility.
      */
     virtual void write() final;
-
-    /**
-     * Returns the underlying `session' object that `chainbase'
-     * provides. TODO: Factor this out; the user should not be aware of
-     * this abstraction.
-     */
-    auto start_undo_session(bool enabled) {
-        return _db.start_undo_session(enabled);
-    }
    
 private:
     /**

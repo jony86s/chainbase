@@ -33,7 +33,7 @@ public:
      * the numerator and `m' being the denominator multiplied by a
      * factor of 100.
      */
-    void print_progress(size_t n, size_t m);
+    void print_progress(uint64_t n, uint64_t m);
 
     /**
      * Flush all saved metrics to the specified file.
@@ -43,43 +43,43 @@ public:
     /**
      * Save a CPU load measurement to the CPU load vector.
      */
-    void log_cpu_load(const size_t& n);
+    void log_cpu_load(const uint64_t& n);
 
     /**
      * Save a RAM usage measurement to the RAM usage vector.
      */
-    void log_ram_usage(const size_t& n);
+    void log_ram_usage(const uint64_t& n);
 
     /**
      * Save a vm_usage measurement to the vm_usage vector.
      */
-    void log_total_vm_usage(const size_t& n);
+    void log_total_vm_usage(const uint64_t& n);
 
     /**
      * Save a TPS measurement to the TPS vector.
      */
-    void log_tps(const size_t& n);
+    void log_tps(const uint64_t& n);
     
 private:
     /**
      * Holds the CPU load measurements.
      */
-    std::vector<size_t> _cpu_load;
+    std::vector<uint64_t> _cpu_load;
 
     /**
      * Holds the RAM usage measurements.
      */
-    std::vector<size_t> _ram_usage;
+    std::vector<uint64_t> _ram_usage;
 
     /**
      * Holds the Swap Usage measurements.
      */
-    std::vector<size_t> _total_vm_usage;
+    std::vector<uint64_t> _total_vm_usage;
     
     /**
      * Holds the TPS measurements.
      */
-    std::vector<size_t> _tps;
+    std::vector<uint64_t> _tps;
     
     /**
      * File in which to log all metrics.

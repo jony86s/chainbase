@@ -11,12 +11,12 @@
 /**
  * Macro to tell the compiler that this branch is likely to happen.
  */
-#define LIKELY(x)   __builtin_expect((size_t)!!(x), 1ULL)
+#define LIKELY(x)   __builtin_expect((uint64_t)!!(x), 1ULL)
 
 /**
  * Macro to tell the compiler that this branch is not likely to happen.
  */
-#define UNLIKELY(x) __builtin_expect((size_t)!!(x), 0ULL)
+#define UNLIKELY(x) __builtin_expect((uint64_t)!!(x), 0ULL)
 
 /**
  * Alias for which to describe a vector of random bytes. Since the
@@ -30,7 +30,7 @@ using arbitrary_datum = std::vector<uint8_t>;
  * Enumeration for which the user must specify how he/she wishes to
  * measure the results of the benchmark.
  */
-enum class window : size_t {
+enum class window : uint64_t {
    expanding_window = 0,
    narrow_window    = 1,
    rolling_window   = 2
@@ -40,10 +40,10 @@ enum class window : size_t {
  * Unused variables; may need for future use when a more
  * comprehensible user-friendly API gets developed.
  */
-__attribute__((unused)) static const size_t byte{1};
-__attribute__((unused)) static const size_t kilobyte{byte*1024};
-__attribute__((unused)) static const size_t megabyte{kilobyte*1024};
-__attribute__((unused)) static const size_t gigabyte{megabyte*1024};
+__attribute__((unused)) static const uint64_t byte{1};
+__attribute__((unused)) static const uint64_t kilobyte{byte*1024};
+__attribute__((unused)) static const uint64_t megabyte{kilobyte*1024};
+__attribute__((unused)) static const uint64_t gigabyte{megabyte*1024};
 
 /**
  * Clocking facility to handle the logic of when to log specified
