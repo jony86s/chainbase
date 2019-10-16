@@ -19,10 +19,11 @@
 #include "system_metrics.hpp"
 
 system_metrics::system_metrics()
+   : _prev_total_ticks{}
+   , _prev_idle_ticks{}
 {
 }
 
-size_t system_metrics::total_vm_usage() {
 #ifdef __APPLE__
 void system_metrics::total_vm() {
    struct statfs my_stats;
@@ -140,18 +141,5 @@ double system_metrics::calculate_cpu_load(size_t idle_ticks, size_t total_ticks)
 #endif // __APPLE__
 
 #ifdef __linux__
-    // More accurate to pass back:
-    // Current Total Physical RAM Usage + (Total VM Usage - Current Total Physical RAM Usage)
-    
-    struct sysinfo mem_info;
-    sysinfo (&mem_info);
-   
-    size_t vm_used = (size_t)mem_info.totalram - (size_t)mem_info.freeram;
-    
-    //Add other values in next statement to avoid int overflow on right hand side.
-    vm_used += (size_t)mem_info.totalswap - (size_t)mem_info.freeswap;
-    vm_used *= (size_t)mem_info.mem_unit;
-
-    return vm_used;
+// ...
 #endif // __linux__
-}

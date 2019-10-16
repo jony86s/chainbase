@@ -72,10 +72,15 @@ public:
     * coefficient < 1.
     */
    double calculate_cpu_load(size_t idle_ticks, size_t total_ticks);
-    /**
-     * Print the total virtual memory currently used on the machine.
-     */
-    size_t total_vm_usage();
 
 private:
+    /**
+    * Holds the previous CPU ticks by the machine.
+    */
+   size_t _prev_total_ticks;
+
+   /**
+    * Holds the previous idle CPU ticks by the machine.
+    */
+   size_t _prev_idle_ticks;
 };

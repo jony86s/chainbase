@@ -36,17 +36,11 @@ void logger::log_cpu_load(const size_t& n) {
 
 void logger::log_ram_usage(const size_t& n) {
     _ram_usage.push_back(n);
-=======
     for (size_t i{}; i < _tps.size(); ++i) {
         _data_file << std::setw(10) << _tps[i]            << '\t';
         _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
         _data_file << std::flush;
     }
-}
-
-void logger::log_tps(const size_t& n) {
-    _tps.push_back(n);
->>>>>>> metrics
 }
 
 void logger::log_total_vm_usage(const size_t& n) {

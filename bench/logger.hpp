@@ -51,11 +51,6 @@ public:
    void log_ram_usage(const size_t& n);
 
     /**
-     * Save a TPS measurement to the TPS vector.
-     */
-    void log_tps(const size_t& n);
-
-    /**
      * Save a vm_usage measurement to the vm_usage vector.
      */
     void log_total_vm_usage(const size_t& n);
@@ -85,17 +80,6 @@ private:
     * Holds the TPS measurements.
     */
    std::vector<size_t> _tps;
-private:
-
-    /**
-     * Holds the TPS measurements.
-     */
-    std::vector<size_t> _tps;
-
-    /**
-     * Holds the Swap Usage measurements.
-     */
-    std::vector<size_t> _total_vm_usage;
     
     /**
      * File in which to log all metrics.

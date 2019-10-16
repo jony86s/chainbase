@@ -58,19 +58,19 @@ void database_benchmark<Database>::set_program_options(boost::program_options::o
 
 template<typename Database>
 void database_benchmark<Database>::execute_benchmark() {
-    _gen_data.init(_seed,
-                   _lower_bound_inclusive,
-                   _upper_bound_inclusive,
-                   _num_of_accounts,
-                   _num_of_swaps,
-                   _max_key_length,
-                   _max_key_value,
-                   _max_value_length,
-                   _max_value_value);
+   _gen_data.init(_seed,
+                  _lower_bound_inclusive,
+                  _upper_bound_inclusive,
+                  _num_of_accounts,
+                  _num_of_swaps,
+                  _max_key_length,
+                  _max_key_value,
+                  _max_value_length,
+                  _max_value_value);
       
-    _initial_database_state();
-    _execution_loop();
-    loggerman->flush_all();
+   _initial_database_state();
+   _execution_loop();
+   loggerman->flush_all();
 }
 
 template<typename Database>
@@ -140,32 +140,6 @@ void database_benchmark<Database>::_execution_loop() {
 template<typename Database>
 size_t database_benchmark<Database>::_expanding_window_metric(size_t tps) {
    return tps/clockerman->expanding_window();
-    size_t transactions_per_second{};
-
-    std::cout << "Benchmarking...\n" << std::flush;
-    loggerman->print_progress(1,0);
-
-    for (size_t i{}; i < _gen_data.num_of_swaps(); ++i) {
-        // std::cout << "Outside.\n";
-        _database.swap(_gen_data, i);
-        // _database.write();
-        
-        if (UNLIKELY(clockerman->should_log())) {
-            // std::cout << "Inside.\n";
-            loggerman->log_tps(_narrow_window_metric(transactions_per_second));
-            loggerman->log_total_vm_usage(_system_metrics.total_vm_usage());    
-            transactions_per_second = 0;
-            _database.write();
-            
-            loggerman->print_progress(i, _gen_data.num_of_swaps());
-            clockerman->update_clocker();
-        }
-        transactions_per_second += 2;
-    }
-
-    // _database.write();
-    loggerman->print_progress(1,1);
-    std::cout << "done.\n" << std::flush;
 }
 
 template<typename Database>
