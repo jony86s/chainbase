@@ -2,7 +2,7 @@ add_executable(
   bench-tps
   "bench_tps.cpp"
   "chainbase_interface.cpp"
-  "chainrocks_interface.cpp"
+  #"chainrocks_interface.cpp"
   "clocker.cpp"
   "generated_data.cpp"
   "logger.cpp"
@@ -11,7 +11,7 @@ add_executable(
 target_link_libraries(
   bench-tps
   chainbase
-  chainrocks
+  #chainrocks
   Boost::filesystem
   Boost::program_options
   ${ROCKSDB_LIBRARY}

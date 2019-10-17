@@ -26,13 +26,15 @@
 class generated_data {
 public:
     /**
+     * Constructor; normal operation.
+     */
+    generated_data();
+    
+    /**
      * Used to generate the randomly generated data for the benchmark
      * if it has not yet done so via the constructor.
      */
-    generated_data(unsigned int seed,
-                   uint64_t num_of_accounts,
-                   uint64_t num_of_swaps,
-                   uint64_t max_value_size);
+    generated_data(unsigned int seed, uint64_t num_of_accounts, uint64_t num_of_swaps, uint64_t max_value_size);
 
     /**
      * Return the number of accounts in the accounts vector.
@@ -53,7 +55,7 @@ public:
      * Return a reference to the vector holding the randomly generated
      * accounts (`arbitrary_datum').
      */
-    const std::vector<arbitrary_datum>& accounts() const;
+    const std::vector<uint64_t>& accounts() const;
 
     /**
      * Return a reference to the vector holding the randomly generated

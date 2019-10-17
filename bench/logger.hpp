@@ -41,16 +41,6 @@ public:
     void flush_all();
 
     /**
-     * Save a CPU load measurement to the CPU load vector.
-     */
-    void log_cpu_load(const uint64_t& n);
-
-    /**
-     * Save a RAM usage measurement to the RAM usage vector.
-     */
-    void log_ram_usage(const uint64_t& n);
-
-    /**
      * Save a vm_usage measurement to the vm_usage vector.
      */
     void log_total_vm_usage(const uint64_t& n);
@@ -60,17 +50,7 @@ public:
      */
     void log_tps(const uint64_t& n);
     
-private:
-    /**
-     * Holds the CPU load measurements.
-     */
-    std::vector<uint64_t> _cpu_load;
-
-    /**
-     * Holds the RAM usage measurements.
-     */
-    std::vector<uint64_t> _ram_usage;
-
+private:    
     /**
      * Holds the Swap Usage measurements.
      */
@@ -85,4 +65,14 @@ private:
      * File in which to log all metrics.
      */
     std::ofstream _data_file;
+
+    /**
+     * File in which to log all metrics.
+     */
+    std::ofstream _metrics_file;
+
+    /**
+     * Helper function to calculate metrics based off of the given run.
+     */
+    void _flush_metrics();
 };

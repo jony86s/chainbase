@@ -18,12 +18,12 @@ void chainrocks_interface::put(uint64_t key, arbitrary_datum value, void* ctx) {
     _db.put_batch(key, value);
 }
 
-void chainrocks_interface::swap(const uint64_t rand_account0, const uint64_t rand_account1) {
+void chainrocks_interface::swap(const uint64_t rand_key0, const uint64_t rand_key1) {
     std::string string_value0;
     std::string string_value1;
 
-    _db._state.get(rand_account0, string_value0);
-    _db._state.get(rand_account1, string_value1);
+    _db._state.get(rand_key0, string_value0);
+    _db._state.get(rand_key1, string_value1);
 
     chainrocks::rocksdb_datum datum_value0{string_value0};
     chainrocks::rocksdb_datum datum_value1{string_value1};

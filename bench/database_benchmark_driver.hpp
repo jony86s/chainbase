@@ -11,7 +11,7 @@ template<typename Database>
 database_benchmark<Database>::database_benchmark(window window, int argc, char** argv)
     : _window{window}
 {
-    unsigned_int seed{};
+    unsigned int seed{};
     uint64_t num_of_accounts{};
     uint64_t num_of_swaps{};
     uint64_t max_value_size{};
@@ -30,11 +30,11 @@ database_benchmark<Database>::database_benchmark(window window, int argc, char**
          "Seed value for the random number generator.")
          
         ("num-of-accounts,n",
-         boost::program_options::value<uint64_t>(&num_of_accounts)->default_value(10000),
+         boost::program_options::value<uint64_t>(&num_of_accounts)->default_value(100000),
          "Number of unique individual accounts with a corresponding value; key/value pair.")
          
         ("num-of-swaps,w",
-         boost::program_options::value<uint64_t>(&num_of_swaps)->default_value(10000),
+         boost::program_options::value<uint64_t>(&num_of_swaps)->default_value(100000),
          "Number of swaps to perform during the benchmark.")
          
         ("max-value-size,v",
@@ -49,14 +49,10 @@ database_benchmark<Database>::database_benchmark(window window, int argc, char**
       
     if (vmap.count("help") > 0) {
         cli.print(std::cerr);
-        // [ ] TODO: Exit gracefully.
-        throw std::runtime_error{"database_benchmark<Database>::database_benchmark"};
+        exit(EXIT_SUCCESS);
     }
 
-    _gen_data{seed,
-              num_of_accounts,
-              num_of_swaps,
-              max_value_size};
+    _gen_data = generated_data{seed, num_of_accounts, num_of_swaps, max_value_size};
 }
 
 template<typename Database>
@@ -84,8 +80,8 @@ void database_benchmark<Database>::_initial_database_state() {
             clockerman->update_clocker();
         }
     }
-
     _database.write();
+    
     loggerman->print_progress(1,1);
     std::cout << "done.\n" << std::flush;
 }
@@ -99,10 +95,10 @@ void database_benchmark<Database>::_execution_loop() {
     loggerman->print_progress(1,0);
       
     for (uint64_t i{}; i < _gen_data.num_of_swaps(); ++i) {
-        const uint64_t rand_account0{gen_data.accounts()[gen_data.swaps0()[i]]};
-        const uint64_t rand_account1{gen_data.accounts()[gen_data.swaps1()[i]]};
-
-        _database.swap(rand_account0, rand_account1);
+        const uint64_t rand_key0{_gen_data.accounts()[_gen_data.swaps0()[i]]};
+        const uint64_t rand_key1{_gen_data.accounts()[_gen_data.swaps1()[i]]};
+        
+        _database.swap(rand_key0, rand_key1);
        
         if (UNLIKELY(clockerman->should_log())) {
             switch (_window) {
@@ -127,6 +123,7 @@ void database_benchmark<Database>::_execution_loop() {
                     throw std::runtime_error{"database_benchmark::should_log()"};
                     break;
             }
+            loggerman->print_progress(i, _gen_data.num_of_swaps());
         }
       
         transactions_per_second += 2;

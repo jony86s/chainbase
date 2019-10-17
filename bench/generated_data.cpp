@@ -7,11 +7,9 @@
 
 #include "generated_data.hpp"
 
-generated_data::generated_data(unsigned int seed,
-                               uint64_t num_of_accounts,
-                               uint64_t num_of_swaps,
-                               uint64_t max_value_size)
-{
+generated_data::generated_data() = default;
+
+generated_data::generated_data(unsigned int seed, uint64_t num_of_accounts, uint64_t num_of_swaps, uint64_t max_value_size) {
     _def_rand_engine.seed(seed);
     _uniform_int_dist = std::uniform_int_distribution<uint64_t>{0, std::numeric_limits<uint64_t>::max()};
     _num_of_accounts = num_of_accounts;
@@ -28,7 +26,7 @@ const uint64_t generated_data::num_of_swaps() const {
     return _num_of_swaps;
 }
 
-const std::vector<arbitrary_datum>& generated_data::accounts() const {
+const std::vector<uint64_t>& generated_data::accounts() const {
     return _accounts;
 }
 
@@ -51,16 +49,16 @@ void generated_data::_generate_values() {
     loggerman->print_progress(1,0);
 
     for (uint64_t i{}; i < _num_of_accounts; ++i) {
-        uint64_t        account{_uniform_int_dist(_def_rand_engine)};
-        arbitrary_datum value{_max_value_size, _uniform_int_dist(_def_rand_engine)%(_max_value_size)};
+        uint64_t account{_uniform_int_dist(_def_rand_engine)};
+        arbitrary_datum value(_max_value_size, _uniform_int_dist(_def_rand_engine)%255);
 
         // For additional entropy.
         for (uint64_t i{}; i < 8; ++i) {
-            value[i] = _uid(_dre)%(_max_value_value+1);
+            value[i] = _uniform_int_dist(_def_rand_engine)%255;
         }
        
         _accounts.push_back(account);
-        _values.push_back  (value);
+        _values.push_back(value);
 
         if (UNLIKELY(clockerman->should_log())) {
             loggerman->print_progress(i, _num_of_accounts);
@@ -83,5 +81,5 @@ void generated_data::_generate_values() {
 }
 
 uint64_t generated_data::_generate_value() {
-    return _uid(_dre);
+    return _uniform_int_dist(_def_rand_engine);
 }

@@ -17,6 +17,11 @@
 #include "generated_data.hpp"    // generated_data
 
 /**
+ * Tagged structure for retrieving the `account_key' of an account.
+ */
+struct by_primary {};
+
+/**
  * Data structure for which the `multi_index' table operates on during
  * the benchmark `chainbase' to operate on.
  */
@@ -28,13 +33,14 @@ struct account : public chainbase::object<0,account> {
     arbitrary_datum _account_value;
 };
 
+
+
 using account_index = boost::multi_index_container<
     account,
     boost::multi_index::indexed_by<
         boost::multi_index::ordered_unique<boost::multi_index::member<account,account::id_type,&account::id>>,
-        boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(account,arbitrary_datum,_account_key)>,
-        boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(account,arbitrary_datum,_account_value)>
-        >,
+        boost::multi_index::ordered_unique<boost::multi_index::tag<by_primary>, BOOST_MULTI_INDEX_MEMBER(account,uint64_t,_account_key)>
+    >,
     chainbase::allocator<account>
 >;
 
@@ -65,7 +71,7 @@ public:
      * of `chainbase', it shall be put into RAM. `ctx' pointer has no
      * use here; therefore it is not used.
      */
-    virtual void put(arbitrary_datum key, arbitrary_datum value, void* ctx = nullptr) final;
+    virtual void put(uint64_t key, arbitrary_datum value, void* ctx = nullptr) final;
 
     /**
      * Modify the state of `chainbase' by perfoming a canonical

@@ -23,41 +23,9 @@ public:
      * Constructor; normal operation.
      */
     system_metrics();
-    
-    /**
-     * Print the total virtual memory on the machine.
-     */
-    void total_vm();
-
-    /**
-     * Print the total virtual memory currently used by a process.
-     */
-    void total_vm_used_by_proc();
 
     /**
      * Print the total virtual memory currently used on the machine.
      */
     uint64_t total_vm_usage();
-
-    /**
-     * Return the total RAM on the machine.
-     */
-    uint64_t total_ram();
-
-    /**
-     * Return the RAM currently used by the machine as a coefficient
-     * <= 1.
-     */
-    double total_ram_currently_used();
-
-private:
-    /**
-     * Holds the previous CPU ticks by the machine.
-     */
-    uint64_t _prev_total_ticks;
-
-    /**
-     * Holds the previous idle CPU ticks by the machine.
-     */
-    uint64_t _prev_idle_ticks;
 };

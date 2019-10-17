@@ -36,7 +36,7 @@ public:
      * with `window' being the time window in which to gather the
      * results of the benchmark.
      */
-    database_benchmark(window window);
+    database_benchmark(window window, int argc, char** argv);
 
     /**
      * Destructor; normal operation.
@@ -91,9 +91,9 @@ private:
     void _execution_loop();
 
     /**
-    * Helper function to aid in calculating the expanding window
-    * benchmark measurement.
-    */
+     * Helper function to aid in calculating the expanding window
+     * benchmark measurement.
+     */
     uint64_t _expanding_window_metric(uint64_t tps);
 
     /**
@@ -103,8 +103,8 @@ private:
     uint64_t _narrow_window_metric(uint64_t tps);
 
     /**
-    * Helper function to aid in calculating the rolling window
-    * benchmark measurement.
-    */
+     * Helper function to aid in calculating the rolling window
+     * benchmark measurement.
+     */
     uint64_t _rolling_window_metric(uint64_t tps);
 };
