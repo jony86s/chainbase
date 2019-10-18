@@ -30,11 +30,11 @@ database_benchmark<Database>::database_benchmark(window window, int argc, char**
          "Seed value for the random number generator.")
          
         ("num-of-accounts,n",
-         boost::program_options::value<uint64_t>(&num_of_accounts)->default_value(100000),
+         boost::program_options::value<uint64_t>(&num_of_accounts)->default_value(10000),
          "Number of unique individual accounts with a corresponding value; key/value pair.")
          
         ("num-of-swaps,w",
-         boost::program_options::value<uint64_t>(&num_of_swaps)->default_value(100000),
+         boost::program_options::value<uint64_t>(&num_of_swaps)->default_value(3000000),
          "Number of swaps to perform during the benchmark.")
          
         ("max-value-size,v",

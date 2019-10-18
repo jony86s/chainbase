@@ -27,6 +27,15 @@ void logger::print_progress(uint64_t n, uint64_t m) {
     std::cout << '[' << std::setw(3) << (static_cast<uint64_t>((static_cast<double>(n)/m)*100.0)) << "%]\n";
 }
 
+void logger::flush_all() {
+    for (uint64_t i{}; i < _tps.size(); ++i) {
+        _data_file << std::setw(10) << _total_vm_usage[i] << '\t';
+        _data_file << std::setw(10) << _tps[i]            << '\n';
+    }
+
+    _flush_metrics();
+}
+
 void logger::_flush_metrics() {
     std::sort(_tps.begin(), _tps.end());
     
@@ -48,22 +57,13 @@ void logger::_flush_metrics() {
     tps_75th_percentile = *(_tps.crbegin()+quartile);
     tps_mean = std::accumulate(_tps.cbegin(), _tps.cend(), 0) / static_cast<double>(_tps.size());
 
-    _metrics_file << std::setw(10) << vm_usage_mode       << '\t'; // x
-    _metrics_file << std::setw(10) << tps_min             << '\t'; // whisker_min
-    _metrics_file << std::setw(10) << tps_25th_percentile << '\t'; // box_min
-    _metrics_file << std::setw(10) << tps_median          << '\t'; // median
-    _metrics_file << std::setw(10) << tps_75th_percentile << '\t'; // box_max
-    _metrics_file << std::setw(10) << tps_max             << '\t'; // whisker_max
-    _metrics_file << std::setw(10) << tps_mean            << '\n'; // extra
-}
-
-void logger::flush_all() {
-    for (uint64_t i{}; i < _tps.size(); ++i) {
-        _data_file << std::setw(10) << _tps[i]            << '\t';
-        _data_file << std::setw(10) << _total_vm_usage[i] << '\n';
-    }
-
-    _flush_metrics();
+    _metrics_file << std::setw(10) << vm_usage_mode       << "\t"; // x
+    _metrics_file << std::setw(10) << tps_min             << "\t"; // whisker_min
+    _metrics_file << std::setw(10) << tps_25th_percentile << "\t"; // box_min
+    _metrics_file << std::setw(10) << tps_median          << "\t"; // median
+    _metrics_file << std::setw(10) << tps_75th_percentile << "\t"; // box_max
+    _metrics_file << std::setw(10) << tps_max             << "\t"; // whisker_max
+    _metrics_file << std::setw(10) << tps_mean            << "\n"; // extra
 }
 
 void logger::log_total_vm_usage(const uint64_t& n) {

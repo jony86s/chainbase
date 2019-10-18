@@ -48,7 +48,7 @@ uint64_t clocker::narrow_window() {
 }
 
 // Currently only a 5 second rolling window is provided.
-// This will change in the future.
+// [ ] TODO: Make this an options.
 uint64_t clocker::rolling_window(uint64_t term) {
     _rolling_average->push_term(term);
     return _rolling_average->get_rolling_average();

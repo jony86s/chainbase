@@ -27,16 +27,17 @@
  * The output of which shall be a `data.csv' file, which can then be
  * fed into the `gnuplot' script provided in the `build/bench/'
  * directory; and there lie the results of the benchmark.
+ *
+ * Example Usage:
+ * ./bench-tps -s42 -n1000000 -w100000 -v1024
+ *
+ * -s|--seed
+ * -n|--num-of-accounts
+ * -w|--num-of-swaps
+ * -v|--max-value-size (in bytes)
  */
 int main(int argc, char** argv) {
     try {
-        // Usage:
-        // "bench-tps; A Base Layer Transactional Database Benchmarking Tool\n"
-        //     "Usage:\n"
-        //     "bench-tps -s|--seed 42 \\\n"
-        //     "          -n|--num-of-accounts 10000 \\\n"
-        //     "          -w|--num-of-swaps 10000 \\\n"
-        //     "          -v|--max-value-size 1024 \n"
         database_benchmark<chainbase_interface> dt{window::narrow_window, argc, argv};
         dt.execute_benchmark();
     }
