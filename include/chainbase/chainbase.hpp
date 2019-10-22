@@ -323,14 +323,14 @@ namespace chainbase {
 
             const auto& head = _stack.back();
 
-            for( auto id : head.new_ids )
+            for( auto& id : head.new_ids )
             {
                _indices.erase( _indices.find( id ) );
             }
             _next_id = head.old_next_id;
 
             for( auto& item : head.old_values ) {
-               auto ok = _indices.modify( _indices.find( item.second.id ), [&]( value_type& v ) {
+               auto ok = _indices.modify( _indices.find( item.second.id ), [&]( value_type& v ) mutable {
                   v = std::move( item.second );
                });
                if( !ok ) std::abort(); // uniqueness violation
@@ -405,7 +405,7 @@ namespace chainbase {
 
             // We can only be outside type A/AB (the nop path) if B is not nop, so it suffices to iterate through B's three containers.
 
-            for( const auto& item : state.old_values )
+            for( auto& item : state.old_values )
             {
                if( prev_state.new_ids.find( item.second.id ) != prev_state.new_ids.end() )
                {
@@ -424,8 +424,8 @@ namespace chainbase {
             }
 
             // *+new, but we assume the N/A cases don't happen, leaving type B nop+new -> new
-            for( auto id : state.new_ids )
-               prev_state.new_ids.insert(id);
+            for( auto& id : state.new_ids )
+               prev_state.new_ids.emplace( std::move(id) );
 
             // *+del
             for( auto& obj : state.removed_values )
