@@ -323,7 +323,7 @@ namespace chainbase {
 
             const auto& head = _stack.back();
 
-            for( auto& id : head.new_ids )
+            for( auto id : head.new_ids )
             {
                _indices.erase( _indices.find( id ) );
             }
@@ -424,8 +424,8 @@ namespace chainbase {
             }
 
             // *+new, but we assume the N/A cases don't happen, leaving type B nop+new -> new
-            for( auto& id : state.new_ids )
-               prev_state.new_ids.emplace( std::move(id) );
+            for( auto id : state.new_ids )
+               prev_state.new_ids.emplace(id);
 
             // *+del
             for( auto& obj : state.removed_values )
