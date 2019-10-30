@@ -13,11 +13,130 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/core/demangle.hpp>
 #include <boost/interprocess/interprocess_fwd.hpp>
+#include <boost/chrono/system_clocks.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <memory>
 #include <type_traits>
 #include <sstream>
 
 namespace chainbase {
+
+class microseconds {
+public:
+   explicit microseconds( int64_t c = 0) :_count(c){}
+   static microseconds maximum() { return microseconds(0x7fffffffffffffffll); }
+   friend microseconds operator + (const  microseconds& l, const microseconds& r ) { return microseconds(l._count+r._count); }
+   friend microseconds operator - (const  microseconds& l, const microseconds& r ) { return microseconds(l._count-r._count); }
+
+
+   bool operator==(const microseconds& c)const { return _count == c._count; }
+   bool operator!=(const microseconds& c)const { return _count != c._count; }
+   friend bool operator>(const microseconds& a, const microseconds& b){ return a._count > b._count; }
+   friend bool operator>=(const microseconds& a, const microseconds& b){ return a._count >= b._count; }
+   friend bool operator<(const microseconds& a, const microseconds& b){ return a._count < b._count; }
+   friend bool operator<=(const microseconds& a, const microseconds& b){ return a._count <= b._count; }
+   microseconds& operator+=(const microseconds& c) { _count += c._count; return *this; }
+   microseconds& operator-=(const microseconds& c) { _count -= c._count; return *this; }
+   int64_t count()const { return _count; }
+   int64_t to_seconds()const { return _count/1000000; }
+private:
+   friend class time_point;
+   int64_t      _count;
+};
+inline microseconds seconds( int64_t s ) { return microseconds( s * 1000000 ); }
+inline microseconds milliseconds( int64_t s ) { return microseconds( s * 1000 ); }
+inline microseconds minutes(int64_t m) { return seconds(60*m); }
+inline microseconds hours(int64_t h) { return minutes(60*h); }
+inline microseconds days(int64_t d) { return hours(24*d); }
+
+class time_point {
+public:
+   explicit time_point( microseconds e = microseconds() ) :elapsed(e){}
+   static time_point now();
+   static time_point maximum() { return time_point( microseconds::maximum() ); }
+   static time_point min() { return time_point();                      }
+
+   operator std::string()const;
+
+   const microseconds& time_since_epoch()const { return elapsed; }
+   uint32_t            sec_since_epoch()const  { return elapsed.count() / 1000000; }
+   bool   operator > ( const time_point& t )const                              { return elapsed._count > t.elapsed._count; }
+   bool   operator >=( const time_point& t )const                              { return elapsed._count >=t.elapsed._count; }
+   bool   operator < ( const time_point& t )const                              { return elapsed._count < t.elapsed._count; }
+   bool   operator <=( const time_point& t )const                              { return elapsed._count <=t.elapsed._count; }
+   bool   operator ==( const time_point& t )const                              { return elapsed._count ==t.elapsed._count; }
+   bool   operator !=( const time_point& t )const                              { return elapsed._count !=t.elapsed._count; }
+   time_point&  operator += ( const microseconds& m)                           { elapsed+=m; return *this;                 }
+   time_point&  operator -= ( const microseconds& m)                           { elapsed-=m; return *this;                 }
+   time_point   operator + (const microseconds& m) const { return time_point(elapsed+m); }
+   time_point   operator - (const microseconds& m) const { return time_point(elapsed-m); }
+   microseconds operator - (const time_point& m) const { return microseconds(elapsed.count() - m.elapsed.count()); }
+private:
+   microseconds elapsed;
+};
+
+namespace bch = boost::chrono;
+
+inline time_point time_point::now()
+{
+   return time_point( microseconds( bch::duration_cast<bch::microseconds>( bch::system_clock::now().time_since_epoch() ).count() ) );
+}
+
+
+inline time_point::operator std::string()const
+{
+   auto count = elapsed.count();
+   if (count >= 0) {
+      uint64_t secs = (uint64_t)count / 1000000ULL;
+      uint64_t msec = ((uint64_t)count % 1000000ULL) / 1000ULL;
+      std::string padded_ms = std::to_string((uint64_t)(msec + 1000ULL)).substr(1);
+      const auto ptime = boost::posix_time::from_time_t(time_t(secs));
+      return boost::posix_time::to_iso_extended_string(ptime) + "." + padded_ms;
+   } else {
+      // negative time_points serialized as "durations" in the ISO form with boost
+      // this is not very human readable but fits the precedent set by the above
+      auto as_duration = boost::posix_time::microseconds(count);
+      return boost::posix_time::to_iso_string(as_duration);
+   }
+}
+
+
+class code_timer {
+public:
+   explicit code_timer( std::string msg, size_t period = 1 )
+         : period_mod( period ), log_msg( std::move( msg ) ) {}
+
+   void start() {
+      begin = time_point::now();
+   }
+
+   void stop() {
+      microseconds t = time_point::now() - begin;
+      total += t;
+      if( t > max ) max = t;
+      if( t > tmax ) tmax = t;
+      if( t < min ) min = t;
+      if( ++count % period_mod == 0 ) {
+         std::cerr << log_msg << ": avg: " << (total.count()/period_mod)
+                   << ", min: " << min.count() << ", max: " << max.count()
+                   << ", tmax: " << tmax.count() << ", count: " << count << std::endl;
+         total = microseconds();
+         min = microseconds::maximum();
+         max = microseconds();
+      }
+   }
+
+private:
+   size_t           count = 0;
+   size_t           period_mod = 0;
+   std::string      log_msg;
+   time_point   begin;
+   microseconds total;
+   microseconds min = microseconds::maximum();
+   microseconds max;
+   microseconds tmax;
+};
 
    template<typename F>
    struct scope_exit {
@@ -329,22 +448,40 @@ namespace chainbase {
       // Exception safety: strong
       template<typename Constructor>
       const value_type& emplace( Constructor&& c ) {
+         static code_timer ct_all( "emplace", 10100 );
+         ct_all.start();
+         static code_timer ct_a( "allocate", 10101 );
+         ct_a.start();
          auto p = alloc_traits::allocate(_allocator, 1);
+         ct_a.stop();
          auto guard0 = scope_exit{[&]{ alloc_traits::deallocate(_allocator, p, 1); }};
          auto new_id = _next_id;
          auto constructor = [&]( value_type& v ) {
             v.id = new_id;
             c( v );
          };
+         static code_timer ct_c( "construct", 10102 );
+         ct_c.start();
          alloc_traits::construct(_allocator, &*p, constructor, propagate_allocator(_allocator));
+         ct_c.stop();
          auto guard1 = scope_exit{[&]{ alloc_traits::destroy(_allocator, &*p); }};
+         static code_timer ct_i( "insert", 10103 );
+         ct_i.start();
          if(!insert_impl<1>(p->_item))
             BOOST_THROW_EXCEPTION( std::logic_error{ "could not insert object, most likely a uniqueness constraint was violated" } );
+         ct_i.stop();
+         static code_timer ct_p( "push_back", 10104 );
+         ct_p.start();
          std::get<0>(_indices).push_back(p->_item); // cannot fail and we know that it will definitely insert at the end.
+         ct_p.stop();
+         static code_timer ct_on( "on_create", 10105 );
+         ct_on.start();
          on_create(p->_item);
+         ct_on.stop();
          ++_next_id;
          guard1.cancel();
          guard0.cancel();
+         ct_all.stop();
          return p->_item;
       }
 
