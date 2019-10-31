@@ -1,5 +1,9 @@
 #pragma once
 
+#include <iostream>
+
+#include <chainbase/avltree_algorithms.hpp>
+
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/intrusive/set.hpp>
 #include <boost/intrusive/avltree.hpp>

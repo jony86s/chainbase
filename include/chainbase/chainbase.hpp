@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chainbase/avltree_algorithms.hpp>
+
 #include <boost/interprocess/managed_mapped_file.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/containers/set.hpp>
