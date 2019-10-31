@@ -470,11 +470,11 @@ private:
          if(!insert_impl<1>(p->_item))
             BOOST_THROW_EXCEPTION( std::logic_error{ "could not insert object, most likely a uniqueness constraint was violated" } );
          ct_i.stop();
-         static code_timer ct_p( "push_back", 10104 );
+         static code_timer ct_p( "push_back", 10110 );
          ct_p.start();
          std::get<0>(_indices).push_back(p->_item); // cannot fail and we know that it will definitely insert at the end.
          ct_p.stop();
-         static code_timer ct_on( "on_create", 10105 );
+         static code_timer ct_on( "on_create", 10111 );
          ct_on.start();
          on_create(p->_item);
          ct_on.stop();
@@ -798,8 +798,17 @@ private:
       template<int N = 0>
       bool insert_impl(value_type& p) {
          if constexpr (N < sizeof...(Indices)) {
-            auto [iter, inserted] = std::get<N>(_indices).insert_unique(p);
+            auto& idx = std::get<N>(_indices);
+            typename std::decay_t<decltype(idx)>::insert_commit_data insert_data;
+            static code_timer ct_c( N==1?"check 1": (N==2?"check 2":"check"), 10104 + N*2 );
+            ct_c.start();
+            auto [iter, inserted] = idx.insert_unique_check(typename std::decay_t<decltype(idx)>::key_of_value{}(p), insert_data);
+            ct_c.stop();
             if(!inserted) return false;
+            static code_timer ct_i( N==1?"insert 1":(N==2?"insert 2":"insert"), 10105 + N*2 );
+            ct_i.start();
+            iter = idx.insert_unique_commit(p, insert_data);
+            ct_i.stop();
             auto guard = scope_exit{[this,iter=iter]{ std::get<N>(_indices).erase(iter); }};
             if(insert_impl<N+1>(p)) {
                guard.cancel();
