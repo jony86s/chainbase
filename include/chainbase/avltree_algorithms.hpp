@@ -24,6 +24,8 @@
 #include <boost/intrusive/detail/algo_type.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
+#include <boost/chrono/system_clocks.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
@@ -33,6 +35,124 @@
 namespace boost {
 namespace intrusive {
 
+
+class microseconds {
+public:
+   explicit microseconds( int64_t c = 0) :_count(c){}
+   static microseconds maximum() { return microseconds(0x7fffffffffffffffll); }
+   friend microseconds operator + (const  microseconds& l, const microseconds& r ) { return microseconds(l._count+r._count); }
+   friend microseconds operator - (const  microseconds& l, const microseconds& r ) { return microseconds(l._count-r._count); }
+
+
+   bool operator==(const microseconds& c)const { return _count == c._count; }
+   bool operator!=(const microseconds& c)const { return _count != c._count; }
+   friend bool operator>(const microseconds& a, const microseconds& b){ return a._count > b._count; }
+   friend bool operator>=(const microseconds& a, const microseconds& b){ return a._count >= b._count; }
+   friend bool operator<(const microseconds& a, const microseconds& b){ return a._count < b._count; }
+   friend bool operator<=(const microseconds& a, const microseconds& b){ return a._count <= b._count; }
+   microseconds& operator+=(const microseconds& c) { _count += c._count; return *this; }
+   microseconds& operator-=(const microseconds& c) { _count -= c._count; return *this; }
+   int64_t count()const { return _count; }
+   int64_t to_seconds()const { return _count/1000000; }
+private:
+   friend class time_point;
+   int64_t      _count;
+};
+inline microseconds seconds( int64_t s ) { return microseconds( s * 1000000 ); }
+inline microseconds milliseconds( int64_t s ) { return microseconds( s * 1000 ); }
+inline microseconds minutes(int64_t m) { return seconds(60*m); }
+inline microseconds hours(int64_t h) { return minutes(60*h); }
+inline microseconds days(int64_t d) { return hours(24*d); }
+
+class time_point {
+public:
+   explicit time_point( microseconds e = microseconds() ) :elapsed(e){}
+   static time_point now();
+   static time_point maximum() { return time_point( microseconds::maximum() ); }
+   static time_point min() { return time_point();                      }
+
+   operator std::string()const;
+
+   const microseconds& time_since_epoch()const { return elapsed; }
+   uint32_t            sec_since_epoch()const  { return elapsed.count() / 1000000; }
+   bool   operator > ( const time_point& t )const                              { return elapsed._count > t.elapsed._count; }
+   bool   operator >=( const time_point& t )const                              { return elapsed._count >=t.elapsed._count; }
+   bool   operator < ( const time_point& t )const                              { return elapsed._count < t.elapsed._count; }
+   bool   operator <=( const time_point& t )const                              { return elapsed._count <=t.elapsed._count; }
+   bool   operator ==( const time_point& t )const                              { return elapsed._count ==t.elapsed._count; }
+   bool   operator !=( const time_point& t )const                              { return elapsed._count !=t.elapsed._count; }
+   time_point&  operator += ( const microseconds& m)                           { elapsed+=m; return *this;                 }
+   time_point&  operator -= ( const microseconds& m)                           { elapsed-=m; return *this;                 }
+   time_point   operator + (const microseconds& m) const { return time_point(elapsed+m); }
+   time_point   operator - (const microseconds& m) const { return time_point(elapsed-m); }
+   microseconds operator - (const time_point& m) const { return microseconds(elapsed.count() - m.elapsed.count()); }
+private:
+   microseconds elapsed;
+};
+
+namespace bch = boost::chrono;
+
+inline time_point time_point::now()
+{
+   return time_point( microseconds( bch::duration_cast<bch::microseconds>( bch::system_clock::now().time_since_epoch() ).count() ) );
+}
+
+
+inline time_point::operator std::string()const
+{
+   auto count = elapsed.count();
+   if (count >= 0) {
+      uint64_t secs = (uint64_t)count / 1000000ULL;
+      uint64_t msec = ((uint64_t)count % 1000000ULL) / 1000ULL;
+      std::string padded_ms = std::to_string((uint64_t)(msec + 1000ULL)).substr(1);
+      const auto ptime = boost::posix_time::from_time_t(time_t(secs));
+      return boost::posix_time::to_iso_extended_string(ptime) + "." + padded_ms;
+   } else {
+      // negative time_points serialized as "durations" in the ISO form with boost
+      // this is not very human readable but fits the precedent set by the above
+      auto as_duration = boost::posix_time::microseconds(count);
+      return boost::posix_time::to_iso_string(as_duration);
+   }
+}
+
+
+class code_timer {
+public:
+   explicit code_timer( std::string msg, size_t period = 1 )
+         : period_mod( period ), log_msg( std::move( msg ) ) {}
+
+   void start() {
+      begin = time_point::now();
+   }
+
+   void stop() {
+      microseconds t = time_point::now() - begin;
+      total += t;
+      if( t > max ) max = t;
+      if( t > tmax ) tmax = t;
+      if( t < min ) min = t;
+      if( ++count % period_mod == 0 ) {
+         std::cerr << log_msg << ": avg: " << (total.count()/period_mod)
+                   << ", min: " << min.count() << ", max: " << max.count()
+                   << ", tmax: " << tmax.count() << ", count: " << count << std::endl;
+         total = microseconds();
+         min = microseconds::maximum();
+         max = microseconds();
+      }
+   }
+
+private:
+   size_t           count = 0;
+   size_t           period_mod = 0;
+   std::string      log_msg;
+   time_point   begin;
+   microseconds total;
+   microseconds min = microseconds::maximum();
+   microseconds max;
+   microseconds tmax;
+};
+
+  
 /// @cond
 
 template<class NodeTraits, class F>
@@ -416,8 +536,14 @@ class avltree_algorithms
    static void insert_unique_commit
       (node_ptr header, node_ptr new_value, const insert_commit_data &commit_data)
    {
+      static code_timer ct_c( "insert commit", 10200 );
+      ct_c.start();
       bstree_algo::insert_unique_commit(header, new_value, commit_data);
+      ct_c.stop();
+      static code_timer ct_r( "insert rebalace", 10200 );
+      ct_r.start();
       rebalance_after_insertion(header, new_value);
+      ct_r.stop();
    }
 
    //! @copydoc ::boost::intrusive::bstree_algorithms::is_header
